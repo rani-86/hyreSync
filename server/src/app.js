@@ -13,4 +13,5 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/resumes', require('./routes/resumeRoutes'));
+app.use('/api/applications', require('./routes/applicationRoutes'));
 module.exports = app;
