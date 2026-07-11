@@ -24,6 +24,15 @@ const userSchema = new mongoose.Schema(
       enum: ['recruiter', 'candidate'],
       required: true,
     },
+    role: {
+      type: String,
+      enum: ['recruiter', 'candidate'],
+      required: true,
+    },
+    resumeUrl: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
