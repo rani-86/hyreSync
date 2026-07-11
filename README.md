@@ -332,25 +332,4 @@ git commit -m "feat: add job posting CRUD with recruiter role and ownership chec
 
 ---
 
-## Interview talking points — ready-made answers
 
-**"Walk me through your architecture."**
-Two services: a Node/Express REST API handling auth, job postings, and applications, backed by MongoDB Atlas via Mongoose; and a React (Vite) frontend consuming that API. A planned third service — a Python FastAPI microservice — will handle resume parsing and embedding-based candidate scoring, since Python's ML ecosystem (sentence-transformers, scikit-learn) is a better fit for that layer than Node.
-
-**"Why JWT instead of sessions?"**
-Stateless — the server doesn't need to store session data; the token itself carries identity and role, verified via signature on each request. Tradeoff: can't be revoked server-side before expiry without extra infrastructure (e.g., a blocklist), which is a known limitation worth mentioning if pushed.
-
-**"How do you enforce that only recruiters can post jobs?"**
-Role is validated at the schema level on signup (enum-restricted), then a `requireRole('recruiter')` middleware checks the JWT's role claim before any recruiter-only route handler runs — defense at both the data layer and the request layer.
-
-**"How do you stop one recruiter from editing another recruiter's job posting?"**
-Every job document stores a `postedBy` reference (the creating recruiter's ObjectId). On update/delete, the controller compares `job.postedBy.toString()` against `req.user.id` — the ID from the verified JWT, not anything the client sends — and returns `403` on a mismatch. Two layers stacked: role middleware first (are you a recruiter at all?), then ownership check in the controller (is this *your* resource specifically?).
-
-**"Why are your job GET routes public but POST/PUT/DELETE protected?"**
-Candidates need to browse listings before necessarily having an account — forcing login just to view jobs would hurt the product. Write operations are where trust actually matters, so that's where auth is enforced. It's a deliberate split, not an oversight.
-
-**"Tell me about a bug you had to debug."**
-Good answers from this log: the MongoDB connection string parsing bug (understanding URL structure), or the CORS + missing-package double bug (systematic debugging using browser DevTools Network tab to isolate preflight-vs-actual-request failure, then tracing it to a middleware that was never wired in).
-
-**"How do you structure your git workflow?"**
-Feature branches per unit of work, merged via Pull Request into `master`, deleted after merge. Every commit represents a complete, tested, working slice — verified with manual testing (curl for API endpoints, browser DevTools for frontend) before ever staging a commit.
