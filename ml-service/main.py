@@ -1,7 +1,11 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from resume_parser import extract_text_from_pdf_url
 from fit_scorer import compute_fit_score
+from llm_explainer import generate_fit_explanation
 
 app = FastAPI()
 
@@ -17,4 +21,5 @@ def health_check():
 def get_fit_score(payload: FitScoreRequest):
     resume_text = extract_text_from_pdf_url(payload.resume_url)
     score = compute_fit_score(resume_text, payload.job_description)
-    return {"fit_score": score}
+    explanation = generate_fit_explanation(resume_text, payload.job_description, score)
+    return {"fit_score": score, "explanation": explanation}
