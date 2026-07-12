@@ -4,11 +4,13 @@ const {
   applyToJob,
   getMyApplications,
   getApplicantsForJob,
+  getApplicantsWithFitScores,
 } = require('../controllers/applicationController');
 const { protect, requireRole } = require('../middleware/auth');
 
 router.post('/:jobId', protect, requireRole('candidate'), applyToJob);
 router.get('/my', protect, requireRole('candidate'), getMyApplications);
 router.get('/job/:jobId', protect, requireRole('recruiter'), getApplicantsForJob);
+router.get('/job/:jobId/fit-scores', protect, requireRole('recruiter'), getApplicantsWithFitScores);
 
 module.exports = router;
