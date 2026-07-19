@@ -59,7 +59,7 @@ exports.getApplicantsForJob = async (req, res) => {
   }
 };
 
-// Recruiter views applicants for a job, each with an ML-computed fit score
+// Recruiter views applicants for a job, each with an ML-computed fit score and LLM explanation
 exports.getApplicantsWithFitScores = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -76,16 +76,20 @@ exports.getApplicantsWithFitScores = async (req, res) => {
     const results = await Promise.all(
       applications.map(async (app) => {
         if (!app.candidate.resumeUrl) {
-          return { ...app.toObject(), fitScore: null };
+          return { ...app.toObject(), fitScore: null, explanation: null };
         }
         try {
           const mlRes = await axios.post('http://localhost:8000/fit-score', {
             resume_url: app.candidate.resumeUrl,
             job_description: job.description,
           });
-          return { ...app.toObject(), fitScore: mlRes.data.fit_score };
+          return {
+            ...app.toObject(),
+            fitScore: mlRes.data.fit_score,
+            explanation: mlRes.data.explanation,
+          };
         } catch (err) {
-          return { ...app.toObject(), fitScore: null };
+          return { ...app.toObject(), fitScore: null, explanation: null };
         }
       })
     );
