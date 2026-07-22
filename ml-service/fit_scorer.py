@@ -1,11 +1,9 @@
-from sentence_transformers import SentenceTransformer, util
-
-# Load the model once when this module is imported, not on every request —
-# loading it repeatedly would be extremely slow
-model = SentenceTransformer('all-MiniLM-L6-v2')
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 def compute_fit_score(resume_text: str, job_description: str) -> float:
-    embeddings = model.encode([resume_text, job_description], convert_to_tensor=True)
-    similarity = util.cos_sim(embeddings[0], embeddings[1])
-    score = similarity.item()
+    vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform([resume_text, job_description])
+    similarity = cosine_similarity(tfidf_matrix[0], tfidf_matrix[1])
+    score = similarity[0][0]
     return round(score * 100, 2)
