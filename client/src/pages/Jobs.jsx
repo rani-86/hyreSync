@@ -22,30 +22,42 @@ function Jobs() {
     fetchJobs();
   }, []);
 
-  if (loading) return <p>Loading jobs...</p>;
+  if (loading) return <div className="page">Loading jobs…</div>;
 
   return (
-    <div>
-      <h2>Job Listings</h2>
+    <div className="page">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+        <h1>Job Listings</h1>
+        {user?.role === 'recruiter' && (
+          <Link to="/jobs/new">
+            <button className="btn-primary">Post a job</button>
+          </Link>
+        )}
+      </div>
 
-      {user?.role === 'recruiter' && (
-        <Link to="/jobs/new">
-          <button>Post a Job</button>
-        </Link>
+      {error && <p className="form-error">{error}</p>}
+
+      {jobs.length === 0 && !error && (
+        <div className="card">
+          <p style={{ margin: 0 }}>No jobs posted yet.</p>
+        </div>
       )}
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {jobs.length === 0 && !error && <p>No jobs posted yet.</p>}
-
       {jobs.map((job) => (
-        <div key={job._id} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
-          <h3>
+        <div key={job._id} className="card">
+          <h3 style={{ marginBottom: 4 }}>
             <Link to={`/jobs/${job._id}`}>{job.title}</Link>
           </h3>
-          <p>{job.location}</p>
-          <p>Posted by: {job.postedBy?.name}</p>
-          <p>Skills: {job.skillsRequired?.join(', ')}</p>
+          <p style={{ margin: '0 0 12px 0', color: 'var(--muted)', fontSize: '0.9rem' }}>
+            {job.location} · Posted by {job.postedBy?.name}
+          </p>
+          <div>
+            {job.skillsRequired?.map((skill) => (
+              <span key={skill} className="tag tag-signal" style={{ marginRight: 6, marginBottom: 6, display: 'inline-block' }}>
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
       ))}
     </div>

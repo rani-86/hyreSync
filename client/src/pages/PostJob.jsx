@@ -4,10 +4,7 @@ import { createJob } from '../services/api';
 
 function PostJob() {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    skillsRequired: '',
-    location: '',
+    title: '', description: '', skillsRequired: '', location: '',
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -22,10 +19,7 @@ function PostJob() {
     try {
       const payload = {
         ...formData,
-        skillsRequired: formData.skillsRequired
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean),
+        skillsRequired: formData.skillsRequired.split(',').map((s) => s.trim()).filter(Boolean),
       };
       await createJob(payload);
       navigate('/jobs');
@@ -35,38 +29,31 @@ function PostJob() {
   };
 
   return (
-    <div>
-      <h2>Post a Job</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="title"
-          placeholder="Job Title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Job Description"
-          value={formData.description}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="skillsRequired"
-          placeholder="Skills (comma separated, e.g. React, Node.js)"
-          value={formData.skillsRequired}
-          onChange={handleChange}
-        />
-        <input
-          name="location"
-          placeholder="Location"
-          value={formData.location}
-          onChange={handleChange}
-        />
-        <button type="submit">Post Job</button>
+    <div className="page-narrow">
+      <h1 style={{ textAlign: 'center', marginBottom: 4 }}>Post a job</h1>
+      <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: 32 }}>
+        Reach candidates on HireSync
+      </p>
+
+      <form onSubmit={handleSubmit} className="card">
+        <label htmlFor="title">Job title</label>
+        <input id="title" name="title" placeholder="Software Engineer" value={formData.title} onChange={handleChange} required />
+
+        <label htmlFor="description">Description</label>
+        <textarea id="description" name="description" placeholder="What will this person do?" value={formData.description} onChange={handleChange} required />
+
+        <label htmlFor="skillsRequired">Skills</label>
+        <input id="skillsRequired" name="skillsRequired" placeholder="React, Node.js, MongoDB" value={formData.skillsRequired} onChange={handleChange} />
+
+        <label htmlFor="location">Location</label>
+        <input id="location" name="location" placeholder="Remote" value={formData.location} onChange={handleChange} />
+
+        {error && <p className="form-error">{error}</p>}
+
+        <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+          Post job
+        </button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 }

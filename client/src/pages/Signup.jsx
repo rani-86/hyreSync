@@ -4,10 +4,7 @@ import { signup } from '../services/api';
 
 function Signup() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'candidate',
+    name: '', email: '', password: '', role: 'candidate',
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -30,40 +27,36 @@ function Signup() {
   };
 
   return (
-    <div>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <select name="role" value={formData.role} onChange={handleChange}>
+    <div className="page-narrow">
+      <h1 style={{ textAlign: 'center', marginBottom: 4 }}>Create your account</h1>
+      <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: 32 }}>
+        Join HireSync as a candidate or recruiter
+      </p>
+
+      <form onSubmit={handleSubmit} className="card">
+        <label htmlFor="name">Name</label>
+        <input id="name" name="name" placeholder="Jane Doe" value={formData.name} onChange={handleChange} required />
+
+        <label htmlFor="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} required />
+
+        <label htmlFor="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required />
+
+        <label htmlFor="role">I am a…</label>
+        <select id="role" name="role" value={formData.role} onChange={handleChange}>
           <option value="candidate">Candidate</option>
           <option value="recruiter">Recruiter</option>
         </select>
-        <button type="submit">Sign Up</button>
+
+        {error && <p className="form-error">{error}</p>}
+
+        <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+          Create account
+        </button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <p>
+
+      <p style={{ textAlign: 'center', marginTop: 20 }}>
         Already have an account? <Link to="/login">Log in</Link>
       </p>
     </div>
