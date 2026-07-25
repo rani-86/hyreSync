@@ -26,7 +26,6 @@ function Navbar() {
         <div className="navbar-links">
           <Link to="/jobs">Jobs</Link>
           {user && <Link to="/dashboard">Dashboard</Link>}
-          {user?.role === 'candidate' && <Link to="/my-applications">My Applications</Link>}
 
           {user ? (
             <>

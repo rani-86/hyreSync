@@ -2,6 +2,16 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signup } from '../services/api';
 
+function getPasswordChecks(password) {
+  return {
+    length: password.length >= 8,
+    upper: /[A-Z]/.test(password),
+    lower: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[^A-Za-z0-9]/.test(password),
+  };
+}
+
 function Signup() {
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', role: 'candidate',
@@ -13,9 +23,16 @@ function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const checks = getPasswordChecks(formData.password);
+  const isPasswordValid = Object.values(checks).every(Boolean);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (!isPasswordValid) {
+      setError('Please meet all password requirements below');
+      return;
+    }
     try {
       const res = await signup(formData);
       localStorage.setItem('token', res.data.token);
@@ -43,6 +60,16 @@ function Signup() {
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required />
 
+        {formData.password.length > 0 && (
+          <div style={{ marginTop: -6, marginBottom: 14, fontSize: '0.82rem' }}>
+            <PasswordCheck ok={checks.length} label="At least 8 characters" />
+            <PasswordCheck ok={checks.upper} label="One uppercase letter" />
+            <PasswordCheck ok={checks.lower} label="One lowercase letter" />
+            <PasswordCheck ok={checks.number} label="One number" />
+            <PasswordCheck ok={checks.special} label="One special character" />
+          </div>
+        )}
+
         <label htmlFor="role">I am a…</label>
         <select id="role" name="role" value={formData.role} onChange={handleChange}>
           <option value="candidate">Candidate</option>
@@ -59,6 +86,14 @@ function Signup() {
       <p style={{ textAlign: 'center', marginTop: 20 }}>
         Already have an account? <Link to="/login">Log in</Link>
       </p>
+    </div>
+  );
+}
+
+function PasswordCheck({ ok, label }) {
+  return (
+    <div style={{ color: ok ? 'var(--signal)' : 'var(--muted)', marginBottom: 2 }}>
+      {ok ? '✓' : '○'} {label}
     </div>
   );
 }
