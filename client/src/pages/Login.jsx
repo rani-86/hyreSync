@@ -3,10 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/api';
 
 function Login() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -28,29 +25,43 @@ function Login() {
   };
 
   return (
-    <div>
-      <h2>Log In</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="page-narrow">
+      <h1 style={{ textAlign: 'center', marginBottom: 4 }}>Welcome back</h1>
+      <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: 32 }}>
+        Log in to HireSync
+      </p>
+
+      <form onSubmit={handleSubmit} className="card">
+        <label htmlFor="email">Email</label>
         <input
+          id="email"
           name="email"
           type="email"
-          placeholder="Email"
+          placeholder="you@example.com"
           value={formData.email}
           onChange={handleChange}
           required
         />
+
+        <label htmlFor="password">Password</label>
         <input
+          id="password"
           name="password"
           type="password"
-          placeholder="Password"
+          placeholder="••••••••"
           value={formData.password}
           onChange={handleChange}
           required
         />
-        <button type="submit">Log In</button>
+
+        {error && <p className="form-error">{error}</p>}
+
+        <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+          Log in
+        </button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <p>
+
+      <p style={{ textAlign: 'center', marginTop: 20 }}>
         Don't have an account? <Link to="/signup">Sign up</Link>
       </p>
     </div>

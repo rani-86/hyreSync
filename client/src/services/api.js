@@ -18,10 +18,16 @@ api.interceptors.request.use((config) => {
 export const signup = (data) => api.post('/auth/signup', data);
 export const login = (data) => api.post('/auth/login', data);
 
+
 export const getJobs = () => api.get('/jobs');
 export const getJobById = (id) => api.get(`/jobs/${id}`);
 export const createJob = (data) => api.post('/jobs', data);
 export const updateJob = (id, data) => api.put(`/jobs/${id}`, data);
+
+export const applyToJob = (jobId) => api.post(`/applications/${jobId}`);
+export const getMyApplications = () => api.get('/applications/my');
+export const getApplicantsWithFitScores = (jobId) => api.get(`/applications/job/${jobId}/fit-scores`);
+
 export const uploadResume = (file) => {
   const formData = new FormData();
   formData.append('resume', file);
