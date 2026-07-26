@@ -2,7 +2,13 @@ const Job = require('../models/Jobs');
 
 // Create a job — recruiter only
 exports.createJob = async (req, res) => {
+  
   try {
+    const User = require('../models/User');
+    const user = await User.findById(req.user.id);
+    if (!user.isVerified) {
+      return res.status(403).json({ message: 'Please verify your email before posting a job' });
+    }
     const { title, description, skillsRequired, location } = req.body;
     if (!title || !description) {
       return res.status(400).json({ message: 'Title and description are required' });

@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const crypto = require('crypto');
+const sendEmail = require('../config/email');
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -46,6 +48,21 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashedPassword, role });
 
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    await user.save();
+
+    const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
+    await sendEmail({
+      to: user.email,
+      subject: 'Verify your HireSync account',
+      html: `<p>Hi ${user.name},</p>
+             <p>Please verify your email to unlock applying to jobs and posting listings on HireSync.</p>
+             <p><a href="${verifyUrl}">Click here to verify your email</a></p>
+             <p>This link expires in 24 hours.</p>`,
+    });
+
     const token = generateToken(user);
     res.status(201).json({
       token,
@@ -55,7 +72,6 @@ exports.signup = async (req, res) => {
     res.status(500).json({ message: 'Signup failed', error: err.message });
   }
 };
-
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -82,3 +98,31 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Login failed', error: err.message });
   }
 };
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(400).json({ message: 'Verification token missing' });
+    }
+
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired verification link' });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = null;
+    user.verificationTokenExpiry = null;
+    await user.save();
+
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Verification failed', error: err.message });
+  }
+};
+

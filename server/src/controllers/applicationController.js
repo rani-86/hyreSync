@@ -5,6 +5,11 @@ const axios = require('axios');
 // Candidate applies to a job
 exports.applyToJob = async (req, res) => {
   try {
+    const User = require('../models/User');
+    const user = await User.findById(req.user.id);
+    if (!user.isVerified) {
+      return res.status(403).json({ message: 'Please verify your email before applying to jobs' });
+    }
     const { jobId } = req.params;
     const job = await Job.findById(jobId);
     if (!job) {

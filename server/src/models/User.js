@@ -24,13 +24,28 @@ const userSchema = new mongoose.Schema(
       enum: ['recruiter', 'candidate'],
       required: true,
     },
-    role: {
-      type: String,
-      enum: ['recruiter', 'candidate'],
-      required: true,
-    },
     resumeUrl: {
       type: String,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      default: null,
+    },
+    verificationTokenExpiry: {
+      type: Date,
+      default: null,
+    },
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordTokenExpiry: {
+      type: Date,
       default: null,
     },
   },

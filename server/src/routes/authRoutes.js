@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { signup, login } = require('../controllers/authController');
+const { signup, login, verifyEmail } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const User = require('../models/User');
 
 router.post('/signup', signup);
 router.post('/login', login);
+router.get('/verify-email', verifyEmail);
 
 router.get('/me', protect, async (req, res) => {
   const user = await User.findById(req.user.id).select('-password');
