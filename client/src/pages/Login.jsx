@@ -59,6 +59,10 @@ function Login() {
         <button type="submit" className="btn-primary" style={{ width: '100%' }}>
           Log in
         </button>
+
+        <p style={{ textAlign: 'center', marginTop: 12 }}>
+          <Link to="/forgot-password" style={{ fontSize: '0.9rem' }}>Forgot password?</Link>
+        </p>
       </form>
 
       <p style={{ textAlign: 'center', marginTop: 20 }}>
