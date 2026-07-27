@@ -126,3 +126,69 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(200).json({ message: 'If that email exists, a reset link has been sent' });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordTokenExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
+    await user.save();
+
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+    await sendEmail({
+      to: user.email,
+      subject: 'Reset your HireSync password',
+      html: `<p>Hi ${user.name},</p>
+             <p>Click below to reset your password. This link expires in 1 hour.</p>
+             <p><a href="${resetUrl}">Reset your password</a></p>
+             <p>If you didn't request this, you can safely ignore this email.</p>`,
+    });
+
+    res.status(200).json({ message: 'If that email exists, a reset link has been sent' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to process request', error: err.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'Token and new password are required' });
+    }
+
+    const passwordErrors = validatePassword(newPassword);
+    if (passwordErrors.length > 0) {
+      return res.status(400).json({
+        message: `Password must contain ${passwordErrors.join(', ')}`,
+      });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordTokenExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset link' });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetPasswordToken = null;
+    user.resetPasswordTokenExpiry = null;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to reset password', error: err.message });
+  }
+};
