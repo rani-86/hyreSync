@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getApplicantsWithFitScores } from '../services/api';
+import { getApplicantsWithFitScores, updateApplicationStatus } from '../services/api';
 
 function getMatchLabel(score) {
   if (score === null || score === undefined) return { text: 'Not scored', tone: 'tag-pending' };
@@ -9,25 +9,47 @@ function getMatchLabel(score) {
   return { text: 'Limited overlap', tone: 'tag-danger' };
 }
 
+const statusTone = {
+  pending: 'tag-pending',
+  accepted: 'tag-signal',
+  rejected: 'tag-danger',
+};
+
 function JobApplicants() {
   const { id } = useParams();
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [updatingId, setUpdatingId] = useState(null);
+
+  const fetchApplicants = async () => {
+    try {
+      const res = await getApplicantsWithFitScores(id);
+      setApplicants(res.data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load applicants');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchApplicants = async () => {
-      try {
-        const res = await getApplicantsWithFitScores(id);
-        setApplicants(res.data);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load applicants');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchApplicants();
   }, [id]);
+
+  const handleStatusChange = async (applicationId, status) => {
+    setUpdatingId(applicationId);
+    try {
+      await updateApplicationStatus(applicationId, status);
+      setApplicants((prev) =>
+        prev.map((app) => (app._id === applicationId ? { ...app, status } : app))
+      );
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update status');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   if (loading) return <div className="page">Loading applicants…</div>;
 
@@ -54,7 +76,10 @@ function JobApplicants() {
                 <h3 style={{ marginBottom: 2 }}>{app.candidate?.name}</h3>
                 <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.9rem' }}>{app.candidate?.email}</p>
               </div>
-              <span className={`tag ${match.tone}`}>{match.text}</span>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <span className={`tag ${match.tone}`}>{match.text}</span>
+                <span className={`tag ${statusTone[app.status] || 'tag-pending'}`}>{app.status}</span>
+              </div>
             </div>
 
             <div className="match-meter">
@@ -69,10 +94,27 @@ function JobApplicants() {
             )}
 
             {app.candidate?.resumeUrl && (
-              <a href={app.candidate.resumeUrl} target="_blank" rel="noreferrer">
-                View resume →
-              </a>
+              <p style={{ marginBottom: 12 }}>
+                <a href={app.candidate.resumeUrl} target="_blank" rel="noreferrer">View resume →</a>
+              </p>
             )}
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                className="btn-primary"
+                disabled={app.status === 'accepted' || updatingId === app._id}
+                onClick={() => handleStatusChange(app._id, 'accepted')}
+              >
+                Accept
+              </button>
+              <button
+                className="btn-secondary"
+                disabled={app.status === 'rejected' || updatingId === app._id}
+                onClick={() => handleStatusChange(app._id, 'rejected')}
+              >
+                Reject
+              </button>
+            </div>
           </div>
         );
       })}
