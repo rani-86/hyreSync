@@ -105,3 +105,30 @@ exports.getApplicantsWithFitScores = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch applicants with fit scores', error: err.message });
   }
 };
+
+exports.updateApplicationStatus = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    const { status } = req.body;
+
+    if (!['accepted', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    const application = await Application.findById(applicationId).populate('job');
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    if (application.job.postedBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update this application' });
+    }
+
+    application.status = status;
+    await application.save();
+
+    res.status(200).json(application);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update application status', error: err.message });
+  }
+};

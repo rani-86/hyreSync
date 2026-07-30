@@ -39,6 +39,9 @@ export const uploadResume = (file) => {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
+
+export const updateApplicationStatus = (applicationId, status) =>
+  api.patch(`/applications/${applicationId}/status`, { status });
 export const deleteJob = (id) => api.delete(`/jobs/${id}`);
 
 export default api;
