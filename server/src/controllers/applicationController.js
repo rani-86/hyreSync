@@ -1,6 +1,7 @@
 const Application = require('../models/Application');
 const Job = require('../models/Jobs');
 const axios = require('axios');
+const sendEmail = require('../config/email');
 
 // Candidate applies to a job
 exports.applyToJob = async (req, res) => {
@@ -115,7 +116,10 @@ exports.updateApplicationStatus = async (req, res) => {
       return res.status(400).json({ message: 'Invalid status value' });
     }
 
-    const application = await Application.findById(applicationId).populate('job');
+    const application = await Application.findById(applicationId)
+      .populate('job')
+      .populate('candidate');
+
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
@@ -126,6 +130,19 @@ exports.updateApplicationStatus = async (req, res) => {
 
     application.status = status;
     await application.save();
+
+    if (status === 'accepted' || status === 'rejected') {
+      const statusText = status === 'accepted' ? 'accepted' : 'not selected';
+      sendEmail({
+        to: application.candidate.email,
+        subject: `Update on your application for ${application.job.title}`,
+        html: `<p>Hi ${application.candidate.name},</p>
+               <p>Your application for <strong>${application.job.title}</strong> has been <strong>${statusText}</strong>.</p>
+               <p>${status === 'accepted'
+                 ? 'The recruiter may reach out with next steps.'
+                 : 'Thank you for applying — we encourage you to keep exploring other listings on HireSync.'}</p>`,
+      }).catch((err) => console.error('Failed to send status update email:', err.message));
+    }
 
     res.status(200).json(application);
   } catch (err) {
