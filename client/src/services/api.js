@@ -43,5 +43,8 @@ export const uploadResume = (file) => {
 export const updateApplicationStatus = (applicationId, status) =>
   api.patch(`/applications/${applicationId}/status`, { status });
 export const deleteJob = (id) => api.delete(`/jobs/${id}`);
+export const getProfile = () => api.get('/profile');
+export const updateProfile = (data) => api.put('/profile', data);
+export const getRecommendedJobs = () => api.get('/profile/recommendations');
 
 export default api;
