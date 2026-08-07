@@ -28,6 +28,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    domainsOfInterest: {
+      type: [String],
+      default: [],
+    },
+    education: [
+      {
+        degree: { type: String },
+        institution: { type: String },
+        year: { type: String },
+      },
+    ],
     isVerified: {
       type: Boolean,
       default: false,

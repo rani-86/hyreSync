@@ -27,6 +27,10 @@ function Navbar() {
           <Link to="/jobs">Jobs</Link>
           {user && <Link to="/dashboard">Dashboard</Link>}
 
+          {user?.role === 'candidate' && <Link to="/my-applications">My Applications</Link>}
+          {user?.role === 'candidate' && <Link to="/profile">Profile</Link>}
+          {user?.role === 'candidate' && <Link to="/recommendations">Recommended</Link>}
+
           {user ? (
             <>
               <span className="navbar-user">{user.name}</span>

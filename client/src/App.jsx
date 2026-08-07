@@ -12,6 +12,8 @@ import PostJob from './pages/PostJob';
 import JobDetails from './pages/JobDetails';
 import JobApplicants from './pages/JobApplicants';
 import MyApplications from './pages/MyApplications';
+import Profile from './pages/Profile';
+import Recommendations from './pages/Recommendations';
 
 function App() {
   return (
@@ -39,6 +41,12 @@ function App() {
         <Route path="/my-applications" element={
           <ProtectedRoute requiredRole="candidate"><MyApplications /></ProtectedRoute>
         } />
+        <Route path="/profile" element={
+        <ProtectedRoute requiredRole="candidate"><Profile /></ProtectedRoute>
+      } />
+      <Route path="/recommendations" element={
+        <ProtectedRoute requiredRole="candidate"><Recommendations /></ProtectedRoute>
+      } />
       </Routes>
     </>
   );
