@@ -23,3 +23,13 @@ def get_fit_score(payload: FitScoreRequest):
     score = compute_fit_score(resume_text, payload.job_description)
     explanation = generate_fit_explanation(resume_text, payload.job_description, score)
     return {"fit_score": score, "explanation": explanation}
+
+
+class RecommendationRequest(BaseModel):
+    profile_text: str
+    job_description: str
+
+@app.post("/recommend-score")
+def get_recommendation_score(payload: RecommendationRequest):
+    score = compute_fit_score(payload.profile_text, payload.job_description)
+    return {"score": score}
