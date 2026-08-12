@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
 export const signup = (data) => api.post('/auth/signup', data);
 export const login = (data) => api.post('/auth/login', data);
 
-export const verifyEmail = (token) => api.get(`/auth/verify-email?token=${token}`);
+export const verifyEmail = (token) => api.get(`/auth/verify-email?token=${token}`);                                                         
 export const forgotPassword = (email) => api.post('/auth/forgot-password', { email });
 export const resetPassword = (token, newPassword) => api.post('/auth/reset-password', { token, newPassword });
 
@@ -26,7 +26,7 @@ export const resetPassword = (token, newPassword) => api.post('/auth/reset-passw
 export const getJobs = () => api.get('/jobs');
 export const getJobById = (id) => api.get(`/jobs/${id}`);
 export const createJob = (data) => api.post('/jobs', data);
-export const updateJob = (id, data) => api.put(`/jobs/${id}`, data);
+
 
 export const applyToJob = (jobId) => api.post(`/applications/${jobId}`);
 export const getMyApplications = () => api.get('/applications/my');
@@ -42,9 +42,11 @@ export const uploadResume = (file) => {
 
 export const updateApplicationStatus = (applicationId, status) =>
   api.patch(`/applications/${applicationId}/status`, { status });
-export const deleteJob = (id) => api.delete(`/jobs/${id}`);
+
 export const getProfile = () => api.get('/profile');
 export const updateProfile = (data) => api.put('/profile', data);
 export const getRecommendedJobs = () => api.get('/profile/recommendations');
+export const updateJob = (jobId, data) => api.put(`/jobs/${jobId}`, data);
+export const deleteJob = (jobId) => api.delete(`/jobs/${jobId}`);
 
 export default api;
