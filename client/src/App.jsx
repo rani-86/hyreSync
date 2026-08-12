@@ -14,6 +14,7 @@ import JobApplicants from './pages/JobApplicants';
 import MyApplications from './pages/MyApplications';
 import Profile from './pages/Profile';
 import Recommendations from './pages/Recommendations';
+import EditJob from './pages/EditJob';
 
 function App() {
   return (
@@ -35,6 +36,9 @@ function App() {
         <Route path="/jobs/new" element={
           <ProtectedRoute requiredRole="recruiter"><PostJob /></ProtectedRoute>
         } />
+        <Route path="/jobs/:id/edit" element={
+        <ProtectedRoute requiredRole="recruiter"><EditJob /></ProtectedRoute>
+      } />
         <Route path="/jobs/:id/applicants" element={
           <ProtectedRoute requiredRole="recruiter"><JobApplicants /></ProtectedRoute>
         } />

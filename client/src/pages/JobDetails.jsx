@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getJobById, applyToJob } from '../services/api';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getJobById, applyToJob, deleteJob } from '../services/api';
 
 function JobDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [error, setError] = useState('');
   const [applyMessage, setApplyMessage] = useState('');
@@ -33,8 +34,20 @@ function JobDetails() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Delete this job posting? This cannot be undone.')) return;
+    try {
+      await deleteJob(id);
+      navigate('/jobs');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete job');
+    }
+  };
+
   if (error) return <div className="page"><p className="form-error">{error}</p></div>;
   if (!job) return <div className="page">Loading…</div>;
+
+  const isOwner = user?.role === 'recruiter' && job.postedBy?._id === user.id;
 
   return (
     <div className="page">
@@ -64,10 +77,18 @@ function JobDetails() {
           </>
         )}
 
-        {user?.role === 'recruiter' && job.postedBy?._id === user.id && (
-          <Link to={`/jobs/${id}/applicants`}>
-            <button className="btn-secondary">View applicants</button>
-          </Link>
+        {isOwner && (
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Link to={`/jobs/${id}/edit`}>
+              <button className="btn-secondary">Edit job</button>
+            </Link>
+            <Link to={`/jobs/${id}/applicants`}>
+              <button className="btn-secondary">View applicants</button>
+            </Link>
+            <button className="btn-secondary" onClick={handleDelete} style={{ color: 'var(--danger)' }}>
+              Delete job
+            </button>
+          </div>
         )}
       </div>
     </div>
