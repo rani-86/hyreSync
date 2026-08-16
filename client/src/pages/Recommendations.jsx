@@ -21,7 +21,7 @@ function Recommendations() {
     fetchRecommendations();
   }, []);
 
-  if (loading) return <div className="page">Finding jobs for you…</div>;
+  if (loading) return <div className="page"><p className="loading-text">Finding jobs for you…</p></div>;
 
   return (
     <div className="page">

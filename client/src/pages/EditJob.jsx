@@ -49,7 +49,7 @@ function EditJob() {
     }
   };
 
-  if (loading) return <div className="page">Loading…</div>;
+  if (loading) return <div className="page"><p className="loading-text">Loading…</p></div>;
 
   return (
     <div className="page-narrow">

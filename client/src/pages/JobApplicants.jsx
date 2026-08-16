@@ -51,7 +51,7 @@ function JobApplicants() {
     }
   };
 
-  if (loading) return <div className="page">Loading applicants…</div>;
+  if (loading) return <div className="page"><p className="loading-text">Loading applicants…</p></div>;
 
   return (
     <div className="page">
@@ -71,7 +71,7 @@ function JobApplicants() {
 
         return (
           <div key={app._id} className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
               <div>
                 <h3 style={{ marginBottom: 2 }}>{app.candidate?.name}</h3>
                 <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.9rem' }}>{app.candidate?.email}</p>
@@ -99,7 +99,7 @@ function JobApplicants() {
               </p>
             )}
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="job-owner-actions">
               <button
                 className="btn-primary"
                 disabled={app.status === 'accepted' || updatingId === app._id}

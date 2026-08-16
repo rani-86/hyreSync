@@ -10,6 +10,7 @@ function JobDetails() {
   const [error, setError] = useState('');
   const [applyMessage, setApplyMessage] = useState('');
   const [applyError, setApplyError] = useState('');
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -36,17 +37,17 @@ function JobDetails() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Delete this job posting? This cannot be undone.')) return;
     try {
       await deleteJob(id);
       navigate('/jobs');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete job');
+      setConfirmingDelete(false);
     }
   };
 
   if (error) return <div className="page"><p className="form-error">{error}</p></div>;
-  if (!job) return <div className="page">Loading…</div>;
+  if (!job) return <div className="page"><p className="loading-text">Loading…</p></div>;
 
   const isOwner = user?.role === 'recruiter' && job.postedBy?._id === user.id;
 
@@ -57,7 +58,7 @@ function JobDetails() {
       <div className="card" style={{ marginTop: 20 }}>
         <h1 style={{ marginBottom: 4 }}>{job.title}</h1>
         <p style={{ color: 'var(--muted)', marginBottom: 16 }}>
-          {job.location} · Posted by {job.postedBy?.name}
+          {job.location}{job.postedBy?.name ? ` · Posted by ${job.postedBy.name}` : ''}
         </p>
 
         <div style={{ marginBottom: 20 }}>
@@ -78,17 +79,31 @@ function JobDetails() {
           </>
         )}
 
-        {isOwner && (
-          <div style={{ display: 'flex', gap: 8 }}>
+        {isOwner && !confirmingDelete && (
+          <div className="job-owner-actions">
             <Link to={`/jobs/${id}/edit`}>
               <button className="btn-secondary">Edit job</button>
             </Link>
             <Link to={`/jobs/${id}/applicants`}>
               <button className="btn-secondary">View applicants</button>
             </Link>
-            <button className="btn-secondary" onClick={handleDelete} style={{ color: 'var(--danger)' }}>
+            <button className="btn-secondary" onClick={() => setConfirmingDelete(true)} style={{ color: 'var(--danger)' }}>
               Delete job
             </button>
+          </div>
+        )}
+
+        {isOwner && confirmingDelete && (
+          <div className="confirm-inline">
+            <p style={{ margin: '0 0 12px 0' }}>Delete this job posting? This cannot be undone.</p>
+            <div className="job-owner-actions">
+              <button className="btn-secondary" onClick={handleDelete} style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}>
+                Yes, delete it
+              </button>
+              <button className="btn-secondary" onClick={() => setConfirmingDelete(false)}>
+                Cancel
+              </button>
+            </div>
           </div>
         )}
       </div>

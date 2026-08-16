@@ -23,11 +23,11 @@ function Jobs() {
     fetchJobs();
   }, []);
 
-  if (loading) return <div className="page">Loading jobs…</div>;
+  if (loading) return <div className="page"><p className="loading-text">Loading jobs…</p></div>;
 
   return (
     <div className="page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 32 }}>
         <h1>Job Listings</h1>
         {user?.role === 'recruiter' && (
           <Link to="/jobs/new">
@@ -50,7 +50,7 @@ function Jobs() {
             <Link to={`/jobs/${job._id}`}>{job.title}</Link>
           </h3>
           <p style={{ margin: '0 0 12px 0', color: 'var(--muted)', fontSize: '0.9rem' }}>
-            {job.location} · Posted by {job.postedBy?.name}
+            {job.location}{job.postedBy?.name ? ` · Posted by ${job.postedBy.name}` : ''}
           </p>
           <div>
             {job.skillsRequired?.map((skill) => (

@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
+    setMenuOpen(false);
     logout();
     navigate('/login');
   };
@@ -13,15 +16,24 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-        <Link to="/jobs" className="navbar-brand">HireSync</Link>
+        <Link to="/jobs" className="navbar-brand" onClick={() => setMenuOpen(false)}>HireSync</Link>
 
-        <div className="navbar-links">
-          <Link to="/jobs">Jobs</Link>
-          {user && <Link to="/dashboard">Dashboard</Link>}
+        <button
+          className="navbar-toggle"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? '✕' : '☰'}
+        </button>
 
-          {user?.role === 'candidate' && <Link to="/my-applications">My Applications</Link>}
-          {user?.role === 'candidate' && <Link to="/profile">Profile</Link>}
-          {user?.role === 'candidate' && <Link to="/recommendations">Recommended</Link>}
+        <div className={`navbar-links${menuOpen ? ' navbar-links-open' : ''}`}>
+          <Link to="/jobs" onClick={() => setMenuOpen(false)}>Jobs</Link>
+          {user && <Link to="/dashboard" onClick={() => setMenuOpen(false)}>Dashboard</Link>}
+
+          {user?.role === 'candidate' && <Link to="/my-applications" onClick={() => setMenuOpen(false)}>My Applications</Link>}
+          {user?.role === 'candidate' && <Link to="/profile" onClick={() => setMenuOpen(false)}>Profile</Link>}
+          {user?.role === 'candidate' && <Link to="/recommendations" onClick={() => setMenuOpen(false)}>Recommended</Link>}
 
           {user ? (
             <>
@@ -32,8 +44,8 @@ function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login">Log in</Link>
-              <Link to="/signup">
+              <Link to="/login" onClick={() => setMenuOpen(false)}>Log in</Link>
+              <Link to="/signup" onClick={() => setMenuOpen(false)}>
                 <button className="btn-primary navbar-btn">Sign up</button>
               </Link>
             </>
