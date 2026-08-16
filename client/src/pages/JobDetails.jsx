@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getJobById, applyToJob, deleteJob } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function JobDetails() {
   const { id } = useParams();
@@ -9,7 +10,7 @@ function JobDetails() {
   const [error, setError] = useState('');
   const [applyMessage, setApplyMessage] = useState('');
   const [applyError, setApplyError] = useState('');
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchJob = async () => {

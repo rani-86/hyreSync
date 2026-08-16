@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signup } from '../services/api';
+import { signup as signupApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function getPasswordChecks(password) {
   return {
@@ -18,6 +19,7 @@ function Signup() {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,9 +36,8 @@ function Signup() {
       return;
     }
     try {
-      const res = await signup(formData);
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      const res = await signupApi(formData);
+      login(res.data.user, res.data.token);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Signup failed');

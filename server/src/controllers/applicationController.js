@@ -118,8 +118,8 @@ exports.updateApplicationStatus = async (req, res) => {
 
     const application = await Application.findById(applicationId)
       .populate('job')
-      .populate('candidate');
-
+      .populate('candidate', '-password');
+      
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }

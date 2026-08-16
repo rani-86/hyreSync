@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { uploadResume } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function Dashboard() {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+  const { user, updateUser } = useAuth();
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -24,9 +25,7 @@ function Dashboard() {
     try {
       const res = await uploadResume(file);
       setMessage('Resume uploaded successfully!');
-      const updatedUser = { ...user, resumeUrl: res.data.resumeUrl };
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      updateUser({ resumeUrl: res.data.resumeUrl });
     } catch (err) {
       setError(err.response?.data?.message || 'Upload failed');
     }
