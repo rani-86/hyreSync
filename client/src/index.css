@@ -70,6 +70,13 @@ a:hover {
   text-decoration: underline;
 }
 
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 /* Layout helpers */
 .page {
   max-width: 760px;
@@ -285,11 +292,12 @@ button:active {
 
 .navbar-toggle {
   display: none;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: 1px solid var(--hairline);
-  padding: 6px 10px;
-  font-size: 1.1rem;
-  line-height: 1;
+  border-radius: var(--radius-sm);
+  padding: 8px;
   color: var(--ink);
 }
 .navbar-toggle:hover {
@@ -301,6 +309,20 @@ button:active {
   color: var(--muted);
   font-family: var(--font-heading);
   font-size: 0.9rem;
+}
+
+/* Page header — title + primary action */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.page-header h1,
+.page-header h3 {
+  margin-bottom: 0;
 }
 
 /* Dashboard */
@@ -347,7 +369,7 @@ button:active {
   }
 
   .navbar-toggle {
-    display: block;
+    display: flex;
   }
 
   .navbar-links {

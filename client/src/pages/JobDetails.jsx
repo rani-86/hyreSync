@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getJobById, applyToJob, deleteJob } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function JobDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
+  useDocumentTitle(job?.title || 'Job details');
   const [error, setError] = useState('');
   const [applyMessage, setApplyMessage] = useState('');
   const [applyError, setApplyError] = useState('');

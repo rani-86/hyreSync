@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyApplications } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const statusTag = {
   pending: 'tag-pending',
@@ -9,6 +10,7 @@ const statusTag = {
 };
 
 function MyApplications() {
+  useDocumentTitle('My Applications');
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

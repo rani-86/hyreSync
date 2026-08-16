@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getJobs } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { user } = useAuth();
+  useDocumentTitle('Jobs');
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -27,7 +29,7 @@ function Jobs() {
 
   return (
     <div className="page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 32 }}>
+      <div className="page-header">
         <h1>Job Listings</h1>
         {user?.role === 'recruiter' && (
           <Link to="/jobs/new">

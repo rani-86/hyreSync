@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { uploadResume, getJobs } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Dashboard() {
   const { user, updateUser } = useAuth();
+  useDocumentTitle('Dashboard');
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -85,8 +87,8 @@ function Dashboard() {
 
       {isRecruiter && (
         <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0 16px' }}>
-            <h3 style={{ margin: 0 }}>Your job postings</h3>
+          <div className="page-header" style={{ marginTop: 24, marginBottom: 16 }}>
+            <h3>Your job postings</h3>
             <Link to="/jobs/new">
               <button className="btn-primary">Post a job</button>
             </Link>

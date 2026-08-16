@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { verifyEmail } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function VerifyEmail() {
+  useDocumentTitle('Verify email');
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('verifying');
   const [message, setMessage] = useState('');

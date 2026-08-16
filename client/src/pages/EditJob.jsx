@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getJobById, updateJob } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function EditJob() {
+  useDocumentTitle('Edit job');
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({

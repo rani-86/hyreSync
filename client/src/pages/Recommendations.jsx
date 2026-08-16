@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecommendedJobs } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Recommendations() {
+  useDocumentTitle('Recommended');
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

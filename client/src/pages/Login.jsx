@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login as loginApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  useDocumentTitle('Log in');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

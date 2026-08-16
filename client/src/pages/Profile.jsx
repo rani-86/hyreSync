@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getProfile, updateProfile } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Profile() {
+  useDocumentTitle('Profile');
   const [skills, setSkills] = useState('');
   const [domainsOfInterest, setDomains] = useState('');
   const [education, setEducation] = useState([{ degree: '', institution: '', year: '' }]);

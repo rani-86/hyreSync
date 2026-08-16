@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signup as signupApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function getPasswordChecks(password) {
   return {
@@ -20,6 +21,7 @@ function Signup() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  useDocumentTitle('Sign up');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

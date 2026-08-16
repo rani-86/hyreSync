@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getApplicantsWithFitScores, updateApplicationStatus } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function getMatchLabel(score) {
   if (score === null || score === undefined) return { text: 'Not scored', tone: 'tag-pending' };
@@ -16,6 +17,7 @@ const statusTone = {
 };
 
 function JobApplicants() {
+  useDocumentTitle('Applicants');
   const { id } = useParams();
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
