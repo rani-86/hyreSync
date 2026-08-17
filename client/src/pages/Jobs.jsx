@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getJobs } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user } = useAuth();
+  useDocumentTitle('Jobs');
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -22,11 +25,11 @@ function Jobs() {
     fetchJobs();
   }, []);
 
-  if (loading) return <div className="page">Loading jobs…</div>;
+  if (loading) return <div className="page"><p className="loading-text">Loading jobs…</p></div>;
 
   return (
     <div className="page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+      <div className="page-header">
         <h1>Job Listings</h1>
         {user?.role === 'recruiter' && (
           <Link to="/jobs/new">
@@ -49,7 +52,7 @@ function Jobs() {
             <Link to={`/jobs/${job._id}`}>{job.title}</Link>
           </h3>
           <p style={{ margin: '0 0 12px 0', color: 'var(--muted)', fontSize: '0.9rem' }}>
-            {job.location} · Posted by {job.postedBy?.name}
+            {job.location}{job.postedBy?.name ? ` · Posted by ${job.postedBy.name}` : ''}
           </p>
           <div>
             {job.skillsRequired?.map((skill) => (

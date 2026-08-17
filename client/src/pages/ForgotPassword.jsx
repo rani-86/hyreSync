@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { forgotPassword } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function ForgotPassword() {
+  useDocumentTitle('Forgot password');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');

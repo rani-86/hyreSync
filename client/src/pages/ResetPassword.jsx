@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { resetPassword } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function getPasswordChecks(password) {
   return {
@@ -13,6 +14,7 @@ function getPasswordChecks(password) {
 }
 
 function ResetPassword() {
+  useDocumentTitle('Reset password');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');

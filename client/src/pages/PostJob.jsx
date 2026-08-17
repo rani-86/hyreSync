@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createJob } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function PostJob() {
+  useDocumentTitle('Post a job');
   const [formData, setFormData] = useState({
     title: '', description: '', skillsRequired: '', location: '',
   });

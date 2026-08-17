@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getRecommendedJobs } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Recommendations() {
+  useDocumentTitle('Recommended');
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,7 +23,7 @@ function Recommendations() {
     fetchRecommendations();
   }, []);
 
-  if (loading) return <div className="page">Finding jobs for you…</div>;
+  if (loading) return <div className="page"><p className="loading-text">Finding jobs for you…</p></div>;
 
   return (
     <div className="page">

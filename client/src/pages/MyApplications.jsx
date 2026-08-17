@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyApplications } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const statusTag = {
   pending: 'tag-pending',
@@ -9,6 +10,7 @@ const statusTag = {
 };
 
 function MyApplications() {
+  useDocumentTitle('My Applications');
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,7 +29,7 @@ function MyApplications() {
     fetchApplications();
   }, []);
 
-  if (loading) return <div className="page">Loading…</div>;
+  if (loading) return <div className="page"><p className="loading-text">Loading…</p></div>;
 
   return (
     <div className="page">
@@ -45,7 +47,7 @@ function MyApplications() {
 
       {applications.map((app) => (
         <div key={app._id} className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
             <div>
               <h3 style={{ marginBottom: 2 }}>
                 <Link to={`/jobs/${app.job?._id}`}>{app.job?.title}</Link>
