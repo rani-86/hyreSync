@@ -47,7 +47,7 @@ The core differentiator: every application is automatically scored against the j
 | ML Service | Python, FastAPI, scikit-learn (TF-IDF), pdfplumber |
 | GenAI | Groq API (Llama 3.3) |
 | File storage | Cloudinary |
-| Email | Nodemailer (Gmail SMTP) |
+| Email | Resend (HTTP API) |
 | Hosting | Vercel (frontend), Render (backend + ML service), MongoDB Atlas |
 
 ---
@@ -83,7 +83,7 @@ The Node backend and Python ML service are independently deployed and communicat
 - A MongoDB Atlas connection string
 - A Cloudinary account
 - A Groq API key
-- A Gmail account with an [App Password](https://myaccount.google.com/apppasswords) (for email sending)
+- A [Resend](https://resend.com) API key (for email sending)
 
 ### Backend
 ```bash
