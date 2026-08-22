@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { verifyEmail } from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useAuth } from '../context/AuthContext';
 
 function VerifyEmail() {
   useDocumentTitle('Verify email');
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('verifying');
   const [message, setMessage] = useState('');
+  const { user, updateUser } = useAuth();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -22,6 +24,7 @@ function VerifyEmail() {
         const res = await verifyEmail(token);
         setStatus('success');
         setMessage(res.data.message);
+        if (user) updateUser({ isVerified: true });
       } catch (err) {
         setStatus('error');
         setMessage(err.response?.data?.message || 'Verification failed');

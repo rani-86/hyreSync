@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import VerifyBanner from './components/VerifyBanner';
 import ProtectedRoute from './components/ProtectedRoute';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <VerifyBanner />
       <Routes>
         <Route path="/" element={<Navigate to="/jobs" />} />
         <Route path="/signup" element={<Signup />} />

@@ -66,7 +66,7 @@ exports.signup = async (req, res) => {
     const token = generateToken(user);
     res.status(201).json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, isVerified: user.isVerified },
     });
   } catch (err) {
     res.status(500).json({ message: 'Signup failed', error: err.message });
@@ -92,7 +92,7 @@ exports.login = async (req, res) => {
     const token = generateToken(user);
     res.status(200).json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, isVerified: user.isVerified },
     });
   } catch (err) {
     res.status(500).json({ message: 'Login failed', error: err.message });
@@ -123,6 +123,38 @@ exports.verifyEmail = async (req, res) => {
     res.status(200).json({ message: 'Email verified successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Verification failed', error: err.message });
+  }
+};
+
+exports.resendVerification = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: 'Your email is already verified' });
+    }
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    await user.save();
+
+    const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
+    await sendEmail({
+      to: user.email,
+      subject: 'Verify your HireSync account',
+      html: `<p>Hi ${user.name},</p>
+             <p>Please verify your email to unlock applying to jobs and posting listings on HireSync.</p>
+             <p><a href="${verifyUrl}">Click here to verify your email</a></p>
+             <p>This link expires in 24 hours.</p>`,
+    });
+
+    res.status(200).json({ message: 'Verification email sent' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to resend verification email', error: err.message });
   }
 };
 

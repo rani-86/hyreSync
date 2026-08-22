@@ -304,6 +304,42 @@ button:active {
   background: var(--hairline);
 }
 
+/* Verify email banner */
+.verify-banner {
+  background: var(--pending-soft);
+  border-bottom: 1px solid var(--pending);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  text-align: center;
+}
+.verify-banner p {
+  margin: 0;
+  color: var(--pending);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.verify-banner-btn {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  background: transparent;
+  border-color: var(--pending);
+  color: var(--pending);
+}
+.verify-banner-btn:hover {
+  background: var(--pending);
+  color: var(--paper-raised);
+}
+.verify-banner-error {
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-family: var(--font-heading);
+}
+
 /* Loading state */
 .loading-text {
   color: var(--muted);
