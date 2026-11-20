@@ -4,12 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "jest --runInBand"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": ["<rootDir>/tests/env.setup.js"],
+    "testTimeout": 30000
+  },
   "dependencies": {
     "axios": "^1.18.1",
     "bcryptjs": "^3.0.3",
@@ -22,5 +29,10 @@
     "mongoose": "^9.7.4",
     "multer": "^2.2.0",
     "multer-storage-cloudinary": "^4.0.0"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "mongodb-memory-server": "^11.3.0",
+    "supertest": "^7.3.2"
   }
 }
