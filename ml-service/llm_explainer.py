@@ -12,7 +12,7 @@ Job description:
 Candidate's resume (extracted text):
 {resume_text[:2000]}
 
-The candidate's computed fit score is {fit_score}/100 (based on semantic similarity).
+The candidate's computed fit score is {fit_score}/100 (based on keyword/term overlap between the resume and job description, not semantic meaning).
 
 In 2-3 sentences, explain in plain language why this candidate does or doesn't seem like a strong fit. Be specific about matching or missing skills where possible. Do not repeat the numeric score in your answer."""
 

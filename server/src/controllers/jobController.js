@@ -1,4 +1,11 @@
 const Job = require('../models/Jobs');
+const { rebuildIndex } = require('../services/mlService');
+
+// Fire-and-forget: the ml-service corpus index should reflect job changes, but
+// a slow/unreachable ml-service must never block a job create/update/delete response.
+const triggerIndexRebuild = () => {
+  rebuildIndex().catch((err) => console.error('ml-service index rebuild failed:', err.message));
+};
 
 // Create a job — recruiter only
 exports.createJob = async (req, res) => {
@@ -22,6 +29,7 @@ exports.createJob = async (req, res) => {
       postedBy: req.user.id,
     });
 
+    triggerIndexRebuild();
     res.status(201).json(job);
   } catch (err) {
     res.status(500).json({ message: 'Failed to create job', error: err.message });
@@ -66,6 +74,7 @@ exports.updateJob = async (req, res) => {
     if (location) job.location = location;
 
     await job.save();
+    triggerIndexRebuild();
     res.status(200).json(job);
   } catch (err) {
     res.status(500).json({ message: 'Failed to update job', error: err.message });
@@ -83,6 +92,7 @@ exports.deleteJob = async (req, res) => {
     }
 
     await job.deleteOne();
+    triggerIndexRebuild();
     res.status(200).json({ message: 'Job deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Failed to delete job', error: err.message });

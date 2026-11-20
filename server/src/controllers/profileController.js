@@ -1,7 +1,7 @@
 const User = require('../models/User');
 
-const axios = require('axios');
 const Job = require('../models/Jobs');
+const { getRecommendScore } = require('../services/mlService');
 
 exports.getRecommendedJobs = async (req, res) => {
   try {
@@ -24,9 +24,10 @@ exports.getRecommendedJobs = async (req, res) => {
     const results = await Promise.all(
       jobs.map(async (job) => {
         try {
-          const mlRes = await axios.post(`${process.env.ML_SERVICE_URL || 'http://localhost:8000'}/recommend-score`, {
-            profile_text: profileText,
-            job_description: `${job.title} ${job.description} ${job.skillsRequired.join(' ')}`,
+          const mlRes = await getRecommendScore({
+            profileText,
+            jobDescription: `${job.title} ${job.description} ${job.skillsRequired.join(' ')}`,
+            jobId: job._id.toString(),
           });
           return { job, score: mlRes.data.score };
         } catch (err) {

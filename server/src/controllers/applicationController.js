@@ -1,7 +1,7 @@
 const Application = require('../models/Application');
 const Job = require('../models/Jobs');
-const axios = require('axios');
 const sendEmail = require('../config/email');
+const { getFitScore } = require('../services/mlService');
 
 // Candidate applies to a job
 exports.applyToJob = async (req, res) => {
@@ -85,9 +85,10 @@ exports.getApplicantsWithFitScores = async (req, res) => {
           return { ...app.toObject(), fitScore: null, explanation: null };
         }
         try {
-          const mlRes =  await axios.post(`${process.env.ML_SERVICE_URL || 'http://localhost:8000'}/fit-score`, {
-            resume_url: app.candidate.resumeUrl,
-            job_description: job.description,
+          const mlRes = await getFitScore({
+            resumeUrl: app.candidate.resumeUrl,
+            jobDescription: job.description,
+            jobId: job._id.toString(),
           });
           return {
             ...app.toObject(),

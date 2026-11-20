@@ -15,4 +15,5 @@ app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/resumes', require('./routes/resumeRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/applications', require('./routes/applicationRoutes'));
+app.use('/api/internal', require('./routes/internalRoutes'));
 module.exports = app;
