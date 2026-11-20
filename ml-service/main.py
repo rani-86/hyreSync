@@ -45,9 +45,14 @@ def lazy_rebuild_on_startup():
 
 
 class FitScoreRequest(BaseModel):
-    resume_url: str
+    resume_url: str | None = None
+    resume_text: str | None = None
     job_description: str
     job_id: str | None = None
+
+
+class ExtractResumeTextRequest(BaseModel):
+    resume_url: str
 
 
 class RecommendationRequest(BaseModel):
@@ -72,9 +77,19 @@ def rebuild_index(payload: IndexRebuildRequest, x_internal_key: str | None = Hea
     return {"status": "ok", "jobs_indexed": count}
 
 
+@app.post("/extract-resume-text")
+def extract_resume_text(payload: ExtractResumeTextRequest, x_internal_key: str | None = Header(default=None)):
+    require_internal_key(x_internal_key)
+    text = extract_text_from_pdf_url(payload.resume_url)
+    return {"text": text}
+
+
 @app.post("/fit-score")
 def get_fit_score(payload: FitScoreRequest, x_internal_key: str | None = Header(default=None)):
     require_internal_key(x_internal_key)
+
+    if not payload.resume_text and not payload.resume_url:
+        raise HTTPException(status_code=400, detail="resume_text or resume_url is required")
 
     if not corpus_index.is_ready():
         try:
@@ -84,7 +99,9 @@ def get_fit_score(payload: FitScoreRequest, x_internal_key: str | None = Header(
         except Exception:
             pass
 
-    resume_text = extract_text_from_pdf_url(payload.resume_url)
+    # Prefer the cached, already-extracted text so we don't re-download/re-parse
+    # the PDF on every score.
+    resume_text = payload.resume_text or extract_text_from_pdf_url(payload.resume_url)
     score, scoring_method = compute_fit_score(resume_text, payload.job_description, payload.job_id)
     explanation = generate_fit_explanation(resume_text, payload.job_description, score)
     return {"fit_score": score, "explanation": explanation, "scoring_method": scoring_method}

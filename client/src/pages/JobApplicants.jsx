@@ -3,8 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import { getApplicantsWithFitScores, updateApplicationStatus } from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
-function getMatchLabel(score) {
-  if (score === null || score === undefined) return { text: 'Not scored', tone: 'tag-pending' };
+function getMatchLabel(score, scoringStatus) {
+  if (scoringStatus === 'pending') return { text: 'Scoring…', tone: 'tag-pending' };
+  if (scoringStatus === 'failed' || score === null || score === undefined) {
+    return { text: 'Not scored', tone: 'tag-pending' };
+  }
   if (score >= 40) return { text: 'Strong match', tone: 'tag-signal' };
   if (score >= 15) return { text: 'Worth a look', tone: 'tag-pending' };
   return { text: 'Limited overlap', tone: 'tag-danger' };
@@ -68,7 +71,7 @@ function JobApplicants() {
 
       {applicants.map((app) => {
         const score = app.fitScore;
-        const match = getMatchLabel(score);
+        const match = getMatchLabel(score, app.scoringStatus);
         const displayScore = score === null || score === undefined ? 0 : score;
 
         return (

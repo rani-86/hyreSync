@@ -1,5 +1,6 @@
 const Job = require('../models/Jobs');
 const { rebuildIndex } = require('../services/mlService');
+const { rescoreApplicationsForJob } = require('../services/scoringService');
 
 // Fire-and-forget: the ml-service corpus index should reflect job changes, but
 // a slow/unreachable ml-service must never block a job create/update/delete response.
@@ -68,6 +69,7 @@ exports.updateJob = async (req, res) => {
     }
 
     const { title, description, skillsRequired, location } = req.body;
+    const descriptionChanged = Boolean(description) && description !== job.description;
     if (title) job.title = title;
     if (description) job.description = description;
     if (skillsRequired) job.skillsRequired = skillsRequired;
@@ -75,6 +77,11 @@ exports.updateJob = async (req, res) => {
 
     await job.save();
     triggerIndexRebuild();
+    if (descriptionChanged) {
+      rescoreApplicationsForJob(job._id).catch((err) =>
+        console.error('Failed to rescore applications after job update:', err.message)
+      );
+    }
     res.status(200).json(job);
   } catch (err) {
     res.status(500).json({ message: 'Failed to update job', error: err.message });

@@ -17,6 +17,27 @@ const applicationSchema = new mongoose.Schema(
       enum: ['pending', 'accepted', 'rejected'],
       default: 'pending',
     },
+    fitScore: {
+      type: Number,
+      default: null,
+    },
+    explanation: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    scoringMethod: {
+      type: String,
+      default: null,
+    },
+    scoredAt: {
+      type: Date,
+      default: null,
+    },
+    scoringStatus: {
+      type: String,
+      enum: ['pending', 'done', 'failed'],
+      default: 'pending',
+    },
   },
   { timestamps: true }
 );

@@ -1,7 +1,7 @@
 const Application = require('../models/Application');
 const Job = require('../models/Jobs');
 const sendEmail = require('../config/email');
-const { getFitScore } = require('../services/mlService');
+const { scheduleScoring } = require('../services/scoringService');
 
 // Candidate applies to a job
 exports.applyToJob = async (req, res) => {
@@ -25,6 +25,7 @@ exports.applyToJob = async (req, res) => {
       candidate: req.user.id,
     });
     res.status(201).json(application);
+    scheduleScoring(application._id);
   } catch (err) {
     if (err.code === 11000) {
       return res.status(409).json({ message: 'You have already applied to this job' });
@@ -65,7 +66,9 @@ exports.getApplicantsForJob = async (req, res) => {
   }
 };
 
-// Recruiter views applicants for a job, each with an ML-computed fit score and LLM explanation
+// Recruiter views applicants for a job, each with a precomputed fit score and
+// LLM explanation. Scores are computed once in the background (see
+// scoringService) rather than on every page load — this is a plain DB read.
 exports.getApplicantsWithFitScores = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -77,32 +80,10 @@ exports.getApplicantsWithFitScores = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to view applicants for this job' });
     }
     const applications = await Application.find({ job: jobId })
-      .populate('candidate', 'name email resumeUrl');
+      .populate('candidate', 'name email resumeUrl')
+      .sort({ fitScore: -1, createdAt: -1 });
 
-    const results = await Promise.all(
-      applications.map(async (app) => {
-        if (!app.candidate.resumeUrl) {
-          return { ...app.toObject(), fitScore: null, explanation: null };
-        }
-        try {
-          const mlRes = await getFitScore({
-            resumeUrl: app.candidate.resumeUrl,
-            jobDescription: job.description,
-            jobId: job._id.toString(),
-          });
-          return {
-            ...app.toObject(),
-            fitScore: mlRes.data.fit_score,
-            explanation: mlRes.data.explanation,
-          };
-        } catch (err) {
-          return { ...app.toObject(), fitScore: null, explanation: null };
-        }
-      })
-    );
-
-    results.sort((a, b) => (b.fitScore || 0) - (a.fitScore || 0));
-    res.status(200).json(results);
+    res.status(200).json(applications);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch applicants with fit scores', error: err.message });
   }
