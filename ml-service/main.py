@@ -110,7 +110,10 @@ def rebuild_index(payload: IndexRebuildRequest, x_internal_key: str | None = Hea
 @app.post("/extract-resume-text")
 def extract_resume_text(payload: ExtractResumeTextRequest, x_internal_key: str | None = Header(default=None)):
     require_internal_key(x_internal_key)
-    text = extract_text_from_pdf_url(payload.resume_url)
+    try:
+        text = extract_text_from_pdf_url(payload.resume_url)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
     return {"text": text}
 
 
@@ -132,7 +135,10 @@ def get_fit_score(payload: FitScoreRequest, x_internal_key: str | None = Header(
 
     # Prefer the cached, already-extracted text so we don't re-download/re-parse
     # the PDF on every score.
-    resume_text = payload.resume_text or extract_text_from_pdf_url(payload.resume_url)
+    try:
+        resume_text = payload.resume_text or extract_text_from_pdf_url(payload.resume_url)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
 
     score, breakdown, scoring_method = compute_hybrid_score(
         resume_text=resume_text,

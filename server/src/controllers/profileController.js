@@ -48,7 +48,8 @@ exports.getRecommendedJobs = async (req, res) => {
 
     res.status(200).json(results);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch recommendations', error: err.message });
+    console.error('Failed to fetch recommendations:', err.message);
+    res.status(500).json({ message: 'Failed to fetch recommendations' });
   }
 };
 
@@ -70,7 +71,8 @@ exports.updateProfile = async (req, res) => {
     const { password, ...safeUser } = user.toObject();
     res.status(200).json(safeUser);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to update profile', error: err.message });
+    console.error('Failed to update profile:', err.message);
+    res.status(500).json({ message: 'Failed to update profile' });
   }
 };
 
@@ -82,6 +84,7 @@ exports.getProfile = async (req, res) => {
     }
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch profile', error: err.message });
+    console.error('Failed to fetch profile:', err.message);
+    res.status(500).json({ message: 'Failed to fetch profile' });
   }
 };

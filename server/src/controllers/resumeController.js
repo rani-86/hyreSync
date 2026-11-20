@@ -36,6 +36,7 @@ exports.uploadResume = async (req, res) => {
       console.error('Failed to rescore applications after resume upload:', err.message)
     );
   } catch (err) {
-    res.status(500).json({ message: 'Resume upload failed', error: err.message });
+    console.error('Resume upload failed:', err.message);
+    res.status(500).json({ message: 'Resume upload failed' });
   }
 };
