@@ -19,6 +19,18 @@ const statusTone = {
   rejected: 'tag-danger',
 };
 
+const recommendationLabel = {
+  strong_fit: 'Strong fit',
+  possible_fit: 'Possible fit',
+  weak_fit: 'Weak fit',
+};
+
+const recommendationTone = {
+  strong_fit: 'tag-signal',
+  possible_fit: 'tag-pending',
+  weak_fit: 'tag-danger',
+};
+
 function JobApplicants() {
   useDocumentTitle('Applicants');
   const { id } = useParams();
@@ -94,7 +106,30 @@ function JobApplicants() {
               <span className="match-meter-score">{score !== null && score !== undefined ? score : '—'}</span>
             </div>
 
-            {app.explanation && (
+            {app.explanation && typeof app.explanation === 'object' && (
+              <div style={{ marginTop: 12, marginBottom: 12 }}>
+                <p style={{ fontSize: '0.92rem', marginBottom: 8 }}>{app.explanation.summary}</p>
+                {app.explanation.recommendation && (
+                  <span className={`tag ${recommendationTone[app.explanation.recommendation] || 'tag-pending'}`} style={{ marginBottom: 8, display: 'inline-block' }}>
+                    {recommendationLabel[app.explanation.recommendation] || app.explanation.recommendation}
+                  </span>
+                )}
+                <div>
+                  {app.explanation.matched_skills?.map((skill) => (
+                    <span key={`matched-${skill}`} className="tag tag-signal" style={{ marginRight: 6, marginBottom: 6, display: 'inline-block' }}>
+                      ✓ {skill}
+                    </span>
+                  ))}
+                  {app.explanation.missing_skills?.map((skill) => (
+                    <span key={`missing-${skill}`} className="tag tag-danger" style={{ marginRight: 6, marginBottom: 6, display: 'inline-block' }}>
+                      ✕ {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {app.explanation && typeof app.explanation === 'string' && (
               <p style={{ marginTop: 12, marginBottom: 12, fontSize: '0.92rem' }}>{app.explanation}</p>
             )}
 
