@@ -21,13 +21,18 @@ const scoreApplication = async (applicationId, attempt = 1) => {
     const mlRes = await getFitScore({
       resumeText: candidate.resumeText || undefined,
       resumeUrl: candidate.resumeText ? undefined : candidate.resumeUrl,
+      resumeEmbedding: candidate.resumeEmbedding?.length ? candidate.resumeEmbedding : undefined,
       jobDescription: job.description,
       jobId: job._id.toString(),
+      jobEmbedding: job.embedding?.length ? job.embedding : undefined,
+      jobSkills: job.skillsRequired || [],
+      candidateSkills: candidate.skills || [],
     });
 
     application.fitScore = mlRes.data.fit_score;
     application.explanation = mlRes.data.explanation;
     application.scoringMethod = mlRes.data.scoring_method;
+    application.scoreBreakdown = mlRes.data.breakdown;
     application.scoredAt = new Date();
     application.scoringStatus = 'done';
     await application.save();

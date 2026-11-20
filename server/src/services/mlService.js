@@ -39,19 +39,41 @@ const rebuildIndex = async () => {
 const extractResumeText = ({ resumeUrl }) =>
   withRetry(() => mlClient.post('/extract-resume-text', { resume_url: resumeUrl }));
 
-const getFitScore = ({ resumeUrl, resumeText, jobDescription, jobId }) =>
+const getEmbedding = ({ text }) => withRetry(() => mlClient.post('/embed', { text }));
+
+const getFitScore = ({
+  resumeUrl,
+  resumeText,
+  resumeEmbedding,
+  jobDescription,
+  jobId,
+  jobEmbedding,
+  jobSkills,
+  candidateSkills,
+}) =>
   withRetry(() =>
     mlClient.post('/fit-score', {
       resume_url: resumeUrl,
       resume_text: resumeText,
+      resume_embedding: resumeEmbedding,
       job_description: jobDescription,
       job_id: jobId,
+      job_embedding: jobEmbedding,
+      job_skills: jobSkills,
+      candidate_skills: candidateSkills,
     })
   );
 
-const getRecommendScore = ({ profileText, jobDescription, jobId }) =>
+const getRecommendations = ({ profileText, resumeText, resumeEmbedding, candidateSkills, jobs, topK }) =>
   withRetry(() =>
-    mlClient.post('/recommend-score', { profile_text: profileText, job_description: jobDescription, job_id: jobId })
+    mlClient.post('/recommend', {
+      profile_text: profileText,
+      resume_text: resumeText,
+      resume_embedding: resumeEmbedding,
+      candidate_skills: candidateSkills,
+      jobs,
+      top_k: topK,
+    })
   );
 
-module.exports = { rebuildIndex, extractResumeText, getFitScore, getRecommendScore };
+module.exports = { rebuildIndex, extractResumeText, getEmbedding, getFitScore, getRecommendations };

@@ -38,7 +38,7 @@ function Recommendations() {
         </div>
       )}
 
-      {recommendations.map(({ job, score }) => (
+      {recommendations.map(({ job, score, breakdown }) => (
         <div key={job._id} className="card">
           <h3 style={{ marginBottom: 4 }}>
             <Link to={`/jobs/${job._id}`}>{job.title}</Link>
@@ -52,6 +52,11 @@ function Recommendations() {
             </div>
             <span className="match-meter-score">{score}</span>
           </div>
+          {breakdown && (
+            <p style={{ margin: '8px 0 0 0', color: 'var(--muted)', fontSize: '0.8rem' }}>
+              Why: {Object.entries(breakdown).map(([signal, value]) => `${signal} ${value}`).join(' · ')}
+            </p>
+          )}
         </div>
       ))}
     </div>

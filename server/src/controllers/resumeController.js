@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const { extractResumeText } = require('../services/mlService');
 const { rescoreApplicationsForCandidate } = require('../services/scoringService');
+const { embedResume } = require('../services/embeddingService');
 
 exports.uploadResume = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ exports.uploadResume = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { resumeUrl: req.file.path, resumeText: null },
+      { resumeUrl: req.file.path, resumeText: null, resumeEmbedding: [] },
       { new: true }
     ).select('-password');
 
@@ -21,13 +22,15 @@ exports.uploadResume = async (req, res) => {
     });
 
     // Extract once and cache so scoring doesn't re-download/re-parse the PDF,
-    // then recompute fit scores for this candidate's existing applications.
+    // embed it for the semantic signal, then recompute fit scores for this
+    // candidate's existing applications.
     try {
       const extractRes = await extractResumeText({ resumeUrl: user.resumeUrl });
       user.resumeText = extractRes.data.text;
       await user.save();
+      await embedResume(user);
     } catch (err) {
-      console.error('Failed to extract resume text:', err.message);
+      console.error('Failed to extract/embed resume text:', err.message);
     }
     rescoreApplicationsForCandidate(user._id).catch((err) =>
       console.error('Failed to rescore applications after resume upload:', err.message)

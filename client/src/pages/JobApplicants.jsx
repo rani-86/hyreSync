@@ -106,6 +106,12 @@ function JobApplicants() {
               <span className="match-meter-score">{score !== null && score !== undefined ? score : '—'}</span>
             </div>
 
+            {app.scoreBreakdown && (
+              <p style={{ margin: '4px 0 0 0', color: 'var(--muted)', fontSize: '0.8rem' }}>
+                Why: {Object.entries(app.scoreBreakdown).map(([signal, value]) => `${signal} ${value}`).join(' · ')}
+              </p>
+            )}
+
             {app.explanation && typeof app.explanation === 'object' && (
               <div style={{ marginTop: 12, marginBottom: 12 }}>
                 <p style={{ fontSize: '0.92rem', marginBottom: 8 }}>{app.explanation.summary}</p>

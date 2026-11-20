@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // Gemini embedding of resumeText, used for the semantic signal in hybrid
+    // fit scoring. Empty when embeddings are unavailable.
+    resumeEmbedding: {
+      type: [Number],
+      default: [],
+    },
     skills: {
       type: [String],
       default: [],

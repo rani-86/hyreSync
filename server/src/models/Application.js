@@ -29,6 +29,11 @@ const applicationSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // Per-signal score breakdown, e.g. { semantic: 62, lexical: 40, skills: 80 }
+    scoreBreakdown: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
     scoredAt: {
       type: Date,
       default: null,
