@@ -1,7 +1,8 @@
 const Application = require('../models/Application');
 const Job = require('../models/Jobs');
-const axios = require('axios');
 const sendEmail = require('../config/email');
+const { scheduleScoring } = require('../services/scoringService');
+const { escapeHtml } = require('../utils/escapeHtml');
 
 // Candidate applies to a job
 exports.applyToJob = async (req, res) => {
@@ -25,11 +26,13 @@ exports.applyToJob = async (req, res) => {
       candidate: req.user.id,
     });
     res.status(201).json(application);
+    scheduleScoring(application._id);
   } catch (err) {
     if (err.code === 11000) {
       return res.status(409).json({ message: 'You have already applied to this job' });
     }
-    res.status(500).json({ message: 'Failed to apply', error: err.message });
+    console.error('Failed to apply:', err.message);
+    res.status(500).json({ message: 'Failed to apply' });
   }
 };
 
@@ -41,7 +44,8 @@ exports.getMyApplications = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).json(applications);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch applications', error: err.message });
+    console.error('Failed to fetch applications:', err.message);
+    res.status(500).json({ message: 'Failed to fetch applications' });
   }
 };
 
@@ -61,11 +65,14 @@ exports.getApplicantsForJob = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).json(applications);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch applicants', error: err.message });
+    console.error('Failed to fetch applicants:', err.message);
+    res.status(500).json({ message: 'Failed to fetch applicants' });
   }
 };
 
-// Recruiter views applicants for a job, each with an ML-computed fit score and LLM explanation
+// Recruiter views applicants for a job, each with a precomputed fit score and
+// LLM explanation. Scores are computed once in the background (see
+// scoringService) rather than on every page load — this is a plain DB read.
 exports.getApplicantsWithFitScores = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -77,33 +84,13 @@ exports.getApplicantsWithFitScores = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to view applicants for this job' });
     }
     const applications = await Application.find({ job: jobId })
-      .populate('candidate', 'name email resumeUrl');
+      .populate('candidate', 'name email resumeUrl')
+      .sort({ fitScore: -1, createdAt: -1 });
 
-    const results = await Promise.all(
-      applications.map(async (app) => {
-        if (!app.candidate.resumeUrl) {
-          return { ...app.toObject(), fitScore: null, explanation: null };
-        }
-        try {
-          const mlRes =  await axios.post(`${process.env.ML_SERVICE_URL || 'http://localhost:8000'}/fit-score`, {
-            resume_url: app.candidate.resumeUrl,
-            job_description: job.description,
-          });
-          return {
-            ...app.toObject(),
-            fitScore: mlRes.data.fit_score,
-            explanation: mlRes.data.explanation,
-          };
-        } catch (err) {
-          return { ...app.toObject(), fitScore: null, explanation: null };
-        }
-      })
-    );
-
-    results.sort((a, b) => (b.fitScore || 0) - (a.fitScore || 0));
-    res.status(200).json(results);
+    res.status(200).json(applications);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch applicants with fit scores', error: err.message });
+    console.error('Failed to fetch applicants with fit scores:', err.message);
+    res.status(500).json({ message: 'Failed to fetch applicants with fit scores' });
   }
 };
 
@@ -119,7 +106,7 @@ exports.updateApplicationStatus = async (req, res) => {
     const application = await Application.findById(applicationId)
       .populate('job')
       .populate('candidate', '-password');
-      
+
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
@@ -136,8 +123,8 @@ exports.updateApplicationStatus = async (req, res) => {
       sendEmail({
         to: application.candidate.email,
         subject: `Update on your application for ${application.job.title}`,
-        html: `<p>Hi ${application.candidate.name},</p>
-               <p>Your application for <strong>${application.job.title}</strong> has been <strong>${statusText}</strong>.</p>
+        html: `<p>Hi ${escapeHtml(application.candidate.name)},</p>
+               <p>Your application for <strong>${escapeHtml(application.job.title)}</strong> has been <strong>${statusText}</strong>.</p>
                <p>${status === 'accepted'
                  ? 'The recruiter may reach out with next steps.'
                  : 'Thank you for applying — we encourage you to keep exploring other listings on HireSync.'}</p>`,
@@ -146,6 +133,7 @@ exports.updateApplicationStatus = async (req, res) => {
 
     res.status(200).json(application);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to update application status', error: err.message });
+    console.error('Failed to update application status:', err.message);
+    res.status(500).json({ message: 'Failed to update application status' });
   }
 };

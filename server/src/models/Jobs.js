@@ -24,6 +24,12 @@ const jobSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    // Gemini embedding of title+description+skills, used for the semantic
+    // signal in hybrid fit scoring. Empty when embeddings are unavailable.
+    embedding: {
+      type: [Number],
+      default: [],
+    },
   },
   { timestamps: true }
 );

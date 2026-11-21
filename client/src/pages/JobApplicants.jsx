@@ -3,8 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import { getApplicantsWithFitScores, updateApplicationStatus } from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
-function getMatchLabel(score) {
-  if (score === null || score === undefined) return { text: 'Not scored', tone: 'tag-pending' };
+function getMatchLabel(score, scoringStatus) {
+  if (scoringStatus === 'pending') return { text: 'Scoring…', tone: 'tag-pending' };
+  if (scoringStatus === 'failed' || score === null || score === undefined) {
+    return { text: 'Not scored', tone: 'tag-pending' };
+  }
   if (score >= 40) return { text: 'Strong match', tone: 'tag-signal' };
   if (score >= 15) return { text: 'Worth a look', tone: 'tag-pending' };
   return { text: 'Limited overlap', tone: 'tag-danger' };
@@ -14,6 +17,18 @@ const statusTone = {
   pending: 'tag-pending',
   accepted: 'tag-signal',
   rejected: 'tag-danger',
+};
+
+const recommendationLabel = {
+  strong_fit: 'Strong fit',
+  possible_fit: 'Possible fit',
+  weak_fit: 'Weak fit',
+};
+
+const recommendationTone = {
+  strong_fit: 'tag-signal',
+  possible_fit: 'tag-pending',
+  weak_fit: 'tag-danger',
 };
 
 function JobApplicants() {
@@ -68,7 +83,7 @@ function JobApplicants() {
 
       {applicants.map((app) => {
         const score = app.fitScore;
-        const match = getMatchLabel(score);
+        const match = getMatchLabel(score, app.scoringStatus);
         const displayScore = score === null || score === undefined ? 0 : score;
 
         return (
@@ -91,7 +106,36 @@ function JobApplicants() {
               <span className="match-meter-score">{score !== null && score !== undefined ? score : '—'}</span>
             </div>
 
-            {app.explanation && (
+            {app.scoreBreakdown && (
+              <p style={{ margin: '4px 0 0 0', color: 'var(--muted)', fontSize: '0.8rem' }}>
+                Why: {Object.entries(app.scoreBreakdown).map(([signal, value]) => `${signal} ${value}`).join(' · ')}
+              </p>
+            )}
+
+            {app.explanation && typeof app.explanation === 'object' && (
+              <div style={{ marginTop: 12, marginBottom: 12 }}>
+                <p style={{ fontSize: '0.92rem', marginBottom: 8 }}>{app.explanation.summary}</p>
+                {app.explanation.recommendation && (
+                  <span className={`tag ${recommendationTone[app.explanation.recommendation] || 'tag-pending'}`} style={{ marginBottom: 8, display: 'inline-block' }}>
+                    {recommendationLabel[app.explanation.recommendation] || app.explanation.recommendation}
+                  </span>
+                )}
+                <div>
+                  {app.explanation.matched_skills?.map((skill) => (
+                    <span key={`matched-${skill}`} className="tag tag-signal" style={{ marginRight: 6, marginBottom: 6, display: 'inline-block' }}>
+                      ✓ {skill}
+                    </span>
+                  ))}
+                  {app.explanation.missing_skills?.map((skill) => (
+                    <span key={`missing-${skill}`} className="tag tag-danger" style={{ marginRight: 6, marginBottom: 6, display: 'inline-block' }}>
+                      ✕ {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {app.explanation && typeof app.explanation === 'string' && (
               <p style={{ marginTop: 12, marginBottom: 12, fontSize: '0.92rem' }}>{app.explanation}</p>
             )}
 

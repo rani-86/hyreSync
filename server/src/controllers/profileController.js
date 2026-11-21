@@ -1,7 +1,7 @@
 const User = require('../models/User');
 
-const axios = require('axios');
 const Job = require('../models/Jobs');
+const { getRecommendations } = require('../services/mlService');
 
 exports.getRecommendedJobs = async (req, res) => {
   try {
@@ -15,31 +15,41 @@ exports.getRecommendedJobs = async (req, res) => {
       ...(user.domainsOfInterest || []),
     ].join(' ');
 
-    if (!profileText.trim()) {
+    if (!profileText.trim() && !user.resumeText) {
       return res.status(400).json({ message: 'Please add skills or interests to your profile first' });
     }
 
     const jobs = await Job.find().populate('postedBy', 'name');
 
-    const results = await Promise.all(
-      jobs.map(async (job) => {
-        try {
-          const mlRes = await axios.post(`${process.env.ML_SERVICE_URL || 'http://localhost:8000'}/recommend-score`, {
-            profile_text: profileText,
-            job_description: `${job.title} ${job.description} ${job.skillsRequired.join(' ')}`,
-          });
-          return { job, score: mlRes.data.score };
-        } catch (err) {
-          return { job, score: null };
-        }
-      })
-    );
+    // One batch call ranks every job at once, instead of one HTTP request per job.
+    const mlRes = await getRecommendations({
+      profileText,
+      resumeText: user.resumeText || '',
+      resumeEmbedding: user.resumeEmbedding?.length ? user.resumeEmbedding : undefined,
+      candidateSkills: user.skills || [],
+      jobs: jobs.map((job) => ({
+        id: job._id.toString(),
+        title: job.title,
+        description: job.description,
+        skills_required: job.skillsRequired || [],
+        embedding: job.embedding?.length ? job.embedding : undefined,
+      })),
+    });
 
-    results.sort((a, b) => (b.score || 0) - (a.score || 0));
+    const jobById = new Map(jobs.map((job) => [job._id.toString(), job]));
+    const results = mlRes.data.results
+      .map((r) => ({
+        job: jobById.get(r.job_id),
+        score: r.score,
+        breakdown: r.breakdown,
+        scoringMethod: r.scoring_method,
+      }))
+      .filter((r) => r.job);
 
     res.status(200).json(results);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch recommendations', error: err.message });
+    console.error('Failed to fetch recommendations:', err.message);
+    res.status(500).json({ message: 'Failed to fetch recommendations' });
   }
 };
 
@@ -61,7 +71,8 @@ exports.updateProfile = async (req, res) => {
     const { password, ...safeUser } = user.toObject();
     res.status(200).json(safeUser);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to update profile', error: err.message });
+    console.error('Failed to update profile:', err.message);
+    res.status(500).json({ message: 'Failed to update profile' });
   }
 };
 
@@ -73,6 +84,7 @@ exports.getProfile = async (req, res) => {
     }
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch profile', error: err.message });
+    console.error('Failed to fetch profile:', err.message);
+    res.status(500).json({ message: 'Failed to fetch profile' });
   }
 };

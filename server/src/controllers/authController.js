@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const crypto = require('crypto');
 const sendEmail = require('../config/email');
+const { escapeHtml } = require('../utils/escapeHtml');
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -20,6 +21,11 @@ const validatePassword = (password) => {
   if (!/[^A-Za-z0-9]/.test(password)) errors.push('one special character');
   return errors;
 };
+
+// Tokens emailed to users are random and single-use, but only their SHA-256
+// hash is stored — so a database read/leak alone can't be used to verify an
+// email or reset a password.
+const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 exports.signup = async (req, res) => {
   try {
@@ -49,7 +55,7 @@ exports.signup = async (req, res) => {
     const user = await User.create({ name, email, password: hashedPassword, role });
 
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    user.verificationToken = verificationToken;
+    user.verificationToken = hashToken(verificationToken);
     user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
     await user.save();
 
@@ -57,7 +63,7 @@ exports.signup = async (req, res) => {
     await sendEmail({
       to: user.email,
       subject: 'Verify your HireSync account',
-      html: `<p>Hi ${user.name},</p>
+      html: `<p>Hi ${escapeHtml(user.name)},</p>
              <p>Please verify your email to unlock applying to jobs and posting listings on HireSync.</p>
              <p><a href="${verifyUrl}">Click here to verify your email</a></p>
              <p>This link expires in 24 hours.</p>`,
@@ -69,7 +75,8 @@ exports.signup = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role, isVerified: user.isVerified },
     });
   } catch (err) {
-    res.status(500).json({ message: 'Signup failed', error: err.message });
+    console.error('Signup failed:', err.message);
+    res.status(500).json({ message: 'Signup failed' });
   }
 };
 exports.login = async (req, res) => {
@@ -95,7 +102,8 @@ exports.login = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role, isVerified: user.isVerified },
     });
   } catch (err) {
-    res.status(500).json({ message: 'Login failed', error: err.message });
+    console.error('Login failed:', err.message);
+    res.status(500).json({ message: 'Login failed' });
   }
 };
 
@@ -107,7 +115,7 @@ exports.verifyEmail = async (req, res) => {
     }
 
     const user = await User.findOne({
-      verificationToken: token,
+      verificationToken: hashToken(token),
       verificationTokenExpiry: { $gt: Date.now() },
     });
 
@@ -122,7 +130,8 @@ exports.verifyEmail = async (req, res) => {
 
     res.status(200).json({ message: 'Email verified successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Verification failed', error: err.message });
+    console.error('Verification failed:', err.message);
+    res.status(500).json({ message: 'Verification failed' });
   }
 };
 
@@ -138,7 +147,7 @@ exports.resendVerification = async (req, res) => {
     }
 
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    user.verificationToken = verificationToken;
+    user.verificationToken = hashToken(verificationToken);
     user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
     await user.save();
 
@@ -146,7 +155,7 @@ exports.resendVerification = async (req, res) => {
     await sendEmail({
       to: user.email,
       subject: 'Verify your HireSync account',
-      html: `<p>Hi ${user.name},</p>
+      html: `<p>Hi ${escapeHtml(user.name)},</p>
              <p>Please verify your email to unlock applying to jobs and posting listings on HireSync.</p>
              <p><a href="${verifyUrl}">Click here to verify your email</a></p>
              <p>This link expires in 24 hours.</p>`,
@@ -154,7 +163,8 @@ exports.resendVerification = async (req, res) => {
 
     res.status(200).json({ message: 'Verification email sent' });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to resend verification email', error: err.message });
+    console.error('Failed to resend verification email:', err.message);
+    res.status(500).json({ message: 'Failed to resend verification email' });
   }
 };
 
@@ -171,7 +181,7 @@ exports.forgotPassword = async (req, res) => {
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetPasswordToken = resetToken;
+    user.resetPasswordToken = hashToken(resetToken);
     user.resetPasswordTokenExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
     await user.save();
 
@@ -179,7 +189,7 @@ exports.forgotPassword = async (req, res) => {
     await sendEmail({
       to: user.email,
       subject: 'Reset your HireSync password',
-      html: `<p>Hi ${user.name},</p>
+      html: `<p>Hi ${escapeHtml(user.name)},</p>
              <p>Click below to reset your password. This link expires in 1 hour.</p>
              <p><a href="${resetUrl}">Reset your password</a></p>
              <p>If you didn't request this, you can safely ignore this email.</p>`,
@@ -187,7 +197,8 @@ exports.forgotPassword = async (req, res) => {
 
     res.status(200).json({ message: 'If that email exists, a reset link has been sent' });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to process request', error: err.message });
+    console.error('Failed to process forgot-password request:', err.message);
+    res.status(500).json({ message: 'Failed to process request' });
   }
 };
 
@@ -206,7 +217,7 @@ exports.resetPassword = async (req, res) => {
     }
 
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: hashToken(token),
       resetPasswordTokenExpiry: { $gt: Date.now() },
     });
 
@@ -221,6 +232,7 @@ exports.resetPassword = async (req, res) => {
 
     res.status(200).json({ message: 'Password reset successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to reset password', error: err.message });
+    console.error('Failed to reset password:', err.message);
+    res.status(500).json({ message: 'Failed to reset password' });
   }
 };

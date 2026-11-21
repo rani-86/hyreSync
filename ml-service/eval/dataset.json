@@ -1,0 +1,155 @@
+{
+  "jobs": [
+    {
+      "id": "job-backend-py",
+      "title": "Backend Engineer (Python)",
+      "description": "We're looking for a Backend Engineer to build and scale our core API. You'll design REST endpoints, work with PostgreSQL and Redis, and own services deployed on AWS. We value clean, well-tested code and collaborate closely with product and frontend teams in a fast-paced environment. Bachelor's degree or equivalent experience preferred.",
+      "skills_required": ["Python", "Django", "PostgreSQL", "REST APIs", "Redis", "AWS", "Docker"]
+    },
+    {
+      "id": "job-frontend-react",
+      "title": "Frontend Engineer (React)",
+      "description": "Join our product team to build delightful, accessible user interfaces in React. You'll work with TypeScript, Redux, and our design system, shipping features end to end. We care about performance, accessibility, and clean component architecture. Collaborate closely with designers and backend engineers in a fast-paced environment.",
+      "skills_required": ["React", "JavaScript", "TypeScript", "Redux", "CSS", "HTML", "Accessibility"]
+    },
+    {
+      "id": "job-data-scientist",
+      "title": "Data Scientist",
+      "description": "As a Data Scientist you'll build predictive models, run experiments, and turn data into product decisions. Strong Python and SQL skills are required, along with experience in pandas, scikit-learn, and statistical analysis. You'll present findings to stakeholders and collaborate with engineering to ship models to production. Bachelor's degree or equivalent experience preferred.",
+      "skills_required": ["Python", "SQL", "pandas", "scikit-learn", "Statistics", "Machine Learning"]
+    },
+    {
+      "id": "job-devops",
+      "title": "DevOps / Cloud Infrastructure Engineer",
+      "description": "We need a DevOps engineer to own our CI/CD pipelines and cloud infrastructure on AWS. You'll manage Kubernetes clusters, write Terraform, and improve observability with Prometheus and Grafana. Strong scripting skills in Python or Bash required. Collaborate closely with engineering teams in a fast-paced environment.",
+      "skills_required": ["AWS", "Kubernetes", "Terraform", "CI/CD", "Docker", "Python", "Linux"]
+    },
+    {
+      "id": "job-ios",
+      "title": "iOS Engineer",
+      "description": "Build and ship our iOS app used by millions of users. You'll write Swift and SwiftUI, work with Combine for reactive data flow, and optimize app performance. Experience with the App Store release process is a plus. Collaborate closely with design and backend teams in a fast-paced environment.",
+      "skills_required": ["Swift", "SwiftUI", "iOS", "Xcode", "Combine", "REST APIs"]
+    },
+    {
+      "id": "job-qa-automation",
+      "title": "QA Automation Engineer",
+      "description": "We're hiring a QA Automation Engineer to build and maintain our automated test suites. You'll write end-to-end tests with Selenium or Playwright, set up CI pipelines for test runs, and work closely with developers to improve test coverage. Python or JavaScript scripting experience required. Bachelor's degree or equivalent experience preferred.",
+      "skills_required": ["Selenium", "Playwright", "Test Automation", "CI/CD", "Python", "JavaScript"]
+    },
+    {
+      "id": "job-product-designer",
+      "title": "Product Designer (UX)",
+      "description": "As a Product Designer you'll own the end-to-end UX for key product flows, from wireframes to high-fidelity prototypes in Figma. You'll run user research, iterate with engineering, and help maintain our design system. Collaborate closely with product and frontend teams in a fast-paced environment.",
+      "skills_required": ["Figma", "UX Research", "Wireframing", "Prototyping", "Design Systems"]
+    },
+    {
+      "id": "job-backend-java",
+      "title": "Backend Engineer (Java/Spring)",
+      "description": "We're looking for a Backend Engineer to build scalable services in Java with Spring Boot. You'll work with MySQL, Kafka for event streaming, and deploy to AWS. We value clean architecture and strong testing practices. Collaborate closely with product and frontend teams in a fast-paced environment. Bachelor's degree or equivalent experience preferred.",
+      "skills_required": ["Java", "Spring Boot", "MySQL", "Kafka", "AWS", "REST APIs"]
+    }
+  ],
+  "resumes": [
+    {
+      "id": "resume-1-python-backend",
+      "text": "Backend software engineer with 4 years of experience building REST APIs in Python using Django and Flask. Deep experience with PostgreSQL schema design, Redis caching, and deploying services on AWS with Docker. Comfortable owning a service end to end and writing thorough tests. Bachelor's degree in Computer Science.",
+      "skills": ["Python", "Django", "Flask", "PostgreSQL", "Redis", "AWS", "Docker"]
+    },
+    {
+      "id": "resume-2-react-frontend",
+      "text": "Frontend engineer specializing in React and TypeScript. Built accessible, performant UIs with Redux for state management and a component-driven design system. Strong CSS and HTML fundamentals, with a focus on web accessibility standards. Enjoys close collaboration with designers.",
+      "skills": ["React", "TypeScript", "JavaScript", "Redux", "CSS", "HTML", "Accessibility"]
+    },
+    {
+      "id": "resume-3-data-scientist",
+      "text": "Data scientist with a strong background in statistics and machine learning. Experienced building predictive models in Python with pandas and scikit-learn, writing complex SQL queries, and presenting findings to business stakeholders. Has shipped models into production with engineering partners.",
+      "skills": ["Python", "SQL", "pandas", "scikit-learn", "Statistics", "Machine Learning"]
+    },
+    {
+      "id": "resume-4-devops",
+      "text": "DevOps engineer focused on cloud infrastructure and automation. Manages Kubernetes clusters on AWS, writes Terraform for infrastructure as code, and builds CI/CD pipelines. Sets up observability dashboards with Prometheus and Grafana, and scripts in Python and Bash for day-to-day automation.",
+      "skills": ["AWS", "Kubernetes", "Terraform", "CI/CD", "Docker", "Python", "Linux"]
+    },
+    {
+      "id": "resume-5-ios",
+      "text": "iOS engineer with 3 years shipping consumer apps in Swift and SwiftUI. Experienced with Combine for reactive data flow, performance profiling with Instruments, and the full App Store release process. Comfortable working closely with design on polished, native user experiences.",
+      "skills": ["Swift", "SwiftUI", "iOS", "Xcode", "Combine", "REST APIs"]
+    },
+    {
+      "id": "resume-6-qa-automation",
+      "text": "QA automation engineer who builds and maintains large end-to-end test suites with Selenium and Playwright. Integrates automated tests into CI pipelines and partners closely with developers to raise test coverage. Comfortable scripting in both Python and JavaScript.",
+      "skills": ["Selenium", "Playwright", "Test Automation", "CI/CD", "Python", "JavaScript"]
+    },
+    {
+      "id": "resume-7-product-designer",
+      "text": "Product designer focused on end-to-end UX, from early wireframes through high-fidelity prototypes in Figma. Runs user research to validate flows and maintains a shared design system with engineering. Enjoys iterating quickly with cross-functional product teams.",
+      "skills": ["Figma", "UX Research", "Wireframing", "Prototyping", "Design Systems"]
+    },
+    {
+      "id": "resume-8-java-backend",
+      "text": "Backend engineer with 5 years building scalable services in Java and Spring Boot. Deep experience with MySQL, Kafka-based event streaming, and deploying to AWS. Strong believer in clean architecture, code review, and comprehensive automated testing.",
+      "skills": ["Java", "Spring Boot", "MySQL", "Kafka", "AWS", "REST APIs"]
+    },
+    {
+      "id": "resume-9-fullstack",
+      "text": "Full-stack engineer comfortable across the stack: Python/Django on the backend with PostgreSQL, and React with TypeScript on the frontend. Has shipped features end to end, from API design to polished UI, and deployed services on AWS with Docker.",
+      "skills": ["Python", "Django", "PostgreSQL", "React", "TypeScript", "AWS", "Docker"]
+    },
+    {
+      "id": "resume-10-ml-engineer",
+      "text": "Machine learning engineer bridging data science and backend engineering. Builds models in Python with scikit-learn and pandas, then productionizes them behind REST APIs with Django, deployed on AWS. Comfortable with SQL for feature engineering and statistics for model evaluation.",
+      "skills": ["Python", "scikit-learn", "pandas", "Django", "REST APIs", "AWS", "SQL", "Statistics"]
+    }
+  ],
+  "labels": [
+    { "resume_id": "resume-1-python-backend", "job_id": "job-backend-py", "relevant": true },
+    { "resume_id": "resume-1-python-backend", "job_id": "job-devops", "relevant": true },
+    { "resume_id": "resume-1-python-backend", "job_id": "job-frontend-react", "relevant": false },
+    { "resume_id": "resume-1-python-backend", "job_id": "job-ios", "relevant": false },
+
+    { "resume_id": "resume-2-react-frontend", "job_id": "job-frontend-react", "relevant": true },
+    { "resume_id": "resume-2-react-frontend", "job_id": "job-product-designer", "relevant": true },
+    { "resume_id": "resume-2-react-frontend", "job_id": "job-backend-java", "relevant": false },
+    { "resume_id": "resume-2-react-frontend", "job_id": "job-devops", "relevant": false },
+
+    { "resume_id": "resume-3-data-scientist", "job_id": "job-data-scientist", "relevant": true },
+    { "resume_id": "resume-3-data-scientist", "job_id": "job-backend-py", "relevant": true },
+    { "resume_id": "resume-3-data-scientist", "job_id": "job-ios", "relevant": false },
+    { "resume_id": "resume-3-data-scientist", "job_id": "job-product-designer", "relevant": false },
+
+    { "resume_id": "resume-4-devops", "job_id": "job-devops", "relevant": true },
+    { "resume_id": "resume-4-devops", "job_id": "job-backend-py", "relevant": true },
+    { "resume_id": "resume-4-devops", "job_id": "job-product-designer", "relevant": false },
+    { "resume_id": "resume-4-devops", "job_id": "job-ios", "relevant": false },
+
+    { "resume_id": "resume-5-ios", "job_id": "job-ios", "relevant": true },
+    { "resume_id": "resume-5-ios", "job_id": "job-frontend-react", "relevant": true },
+    { "resume_id": "resume-5-ios", "job_id": "job-devops", "relevant": false },
+    { "resume_id": "resume-5-ios", "job_id": "job-data-scientist", "relevant": false },
+
+    { "resume_id": "resume-6-qa-automation", "job_id": "job-qa-automation", "relevant": true },
+    { "resume_id": "resume-6-qa-automation", "job_id": "job-backend-py", "relevant": true },
+    { "resume_id": "resume-6-qa-automation", "job_id": "job-product-designer", "relevant": false },
+    { "resume_id": "resume-6-qa-automation", "job_id": "job-ios", "relevant": false },
+
+    { "resume_id": "resume-7-product-designer", "job_id": "job-product-designer", "relevant": true },
+    { "resume_id": "resume-7-product-designer", "job_id": "job-frontend-react", "relevant": true },
+    { "resume_id": "resume-7-product-designer", "job_id": "job-backend-java", "relevant": false },
+    { "resume_id": "resume-7-product-designer", "job_id": "job-devops", "relevant": false },
+
+    { "resume_id": "resume-8-java-backend", "job_id": "job-backend-java", "relevant": true },
+    { "resume_id": "resume-8-java-backend", "job_id": "job-devops", "relevant": true },
+    { "resume_id": "resume-8-java-backend", "job_id": "job-ios", "relevant": false },
+    { "resume_id": "resume-8-java-backend", "job_id": "job-product-designer", "relevant": false },
+
+    { "resume_id": "resume-9-fullstack", "job_id": "job-backend-py", "relevant": true },
+    { "resume_id": "resume-9-fullstack", "job_id": "job-frontend-react", "relevant": true },
+    { "resume_id": "resume-9-fullstack", "job_id": "job-qa-automation", "relevant": false },
+    { "resume_id": "resume-9-fullstack", "job_id": "job-ios", "relevant": false },
+
+    { "resume_id": "resume-10-ml-engineer", "job_id": "job-data-scientist", "relevant": true },
+    { "resume_id": "resume-10-ml-engineer", "job_id": "job-backend-py", "relevant": true },
+    { "resume_id": "resume-10-ml-engineer", "job_id": "job-product-designer", "relevant": false },
+    { "resume_id": "resume-10-ml-engineer", "job_id": "job-ios", "relevant": false }
+  ]
+}

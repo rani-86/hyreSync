@@ -28,6 +28,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // Text extracted from the resume PDF once at upload time, so applications
+    // don't need to re-download/re-parse the PDF on every score.
+    resumeText: {
+      type: String,
+      default: null,
+    },
+    // Gemini embedding of resumeText, used for the semantic signal in hybrid
+    // fit scoring. Empty when embeddings are unavailable.
+    resumeEmbedding: {
+      type: [Number],
+      default: [],
+    },
     skills: {
       type: [String],
       default: [],
